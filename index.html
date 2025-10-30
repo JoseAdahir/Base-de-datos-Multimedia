@@ -1,68 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <style>
-        body {
-          margin: 40px auto;
-          max-width: 650px;
-          line-height: 1.6;
-          font-size: 18px;
-          font-family: "Courier New", Courier, monospace;
-          color: #444;
-          padding: 0 10px;
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Catalog</title>
+    <link rel="stylesheet" href="fontawesome/css/all.min.css"> <!-- https://fontawesome.com/ -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+    <!-- https://fonts.google.com/ -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/templatemo-video-catalog.css">
+
+</head>
+
+<body>
+    <div class="tm-page-wrap mx-auto">
+        <div class="position-relative">
+            <div class="position-absolute tm-site-header">
+                <div class="container-fluid position-relative">
+                    <div class="row">
+                        <div class="col-5 col-md-8 ml-auto mr-0">
+                            <div class="tm-site-nav">
+                                <nav class="navbar navbar-expand-lg mr-0 ml-auto" id="tm-main-nav">
+                                    <button class="navbar-toggler tm-bg-black py-2 px-3 mr-0 ml-auto collapsed" type="button"
+                                        data-toggle="collapse" data-target="#navbar-nav" aria-controls="navbar-nav"
+                                        aria-expanded="false" aria-label="Toggle navigation">
+                                        <span>
+                                            <i class="fas fa-bars tm-menu-closed-icon"></i>
+                                            <i class="fas fa-times tm-menu-opened-icon"></i>
+                                        </span>
+                                    </button>
+                                    <div class="collapse navbar-collapse tm-nav" id="navbar-nav">
+                                        <ul class="navbar-nav text-uppercase">
+                                            
+                                                <button type="submit" class="button">
+                                                Cerrar sesion
+                                                </button>
+                                                <a class="name-user">Nombre del usuario</a> <!-- pon el nombre del usuario aki -->
+                                           
+                                        </ul>
+                                    </div>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tm-welcome-container text-center text-white">
+                <div class="tm-welcome-container-inner">
+                    <p class="tm-welcome-text mb-1 text-white">En nuestra biblioteca encontraras todo lo que necesitas</p>
+                    <p class="tm-welcome-text mb-1 text-white">Desde libros hasta videos, continua y descubre lo que tenemos</p>
+                    <a href="#content" class="btn tm-btn-animate tm-btn-cta tm-icon-down">
+                        <span>Continuar</span>
+                    </a>
+                </div>
+            </div>
+
+            <div id="tm-video-container">
+                <video autoplay muted loop id="tm-video">
+                        <source src="video/biblioteca.mp4" type="video/mp4">
+                </video>    
+            </div>
+            
+            <i id="tm-video-control-button" class="fas fa-pause"></i>
+        </div>
+
+        <div class="container-fluid">
+            <div id="content" class="mx-auto tm-content-container">
+                <main>
+                    <div class="row">
+                        <div class="col-6">
+                            <h2 class="tm-page-title mb-4">Nuestro catalogo</h2>       
+                        </div>
+
+                         <div class="col-6">
+                            <form class="barra-busqueda">
+                                <input type="text" placeholder="Buscar...">
+                                <button type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Seccion de filtros -->
+                        <div class="tm-categories-container">
+                                <h3 class="tm-text-primary tm-categories-text">Categorias:</h3>
+                                <ul class="nav tm-category-list">
+                                    <li class="nav-item tm-category-item"><a href="index.html" class="nav-link tm-category-link active">Todos</a></li>
+                                    <li class="nav-item tm-category-item"><a href="#" class="nav-link tm-category-link">Libros</a></li>
+                                    <li class="nav-item tm-category-item"><a href="#" class="nav-link tm-category-link">Audio libros</a></li>
+                                    <li class="nav-item tm-category-item"><a href="#" class="nav-link tm-category-link">Videos</a></li>
+                                    <li class="nav-item tm-category-item"><a href="#" class="nav-link tm-category-link">Música</a></li>
+                                </ul> 
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                            <a href="#" class="button boton-verde my-3">
+                                Agregar nuevo contenido
+                                <i class="fas fa-plus"></i>
+                            </a> 
+                     
+                    </div>
+
+                    
+                    <div class="row tm-catalog-item-list">
+                        <!-- Estructura para las fichas de los videos, deben de insertarse apartir de aqui -->
+                         
+                        <!-- Ficha para los videos-->
+                        <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item">
+                            <div class="position-relative tm-thumbnail-container">
+                                <img src="img/tn-01.jpg" alt="Image" class="img-fluid tm-catalog-item-img">
+                                <span class="video-duration">12:34</span> <!-- Aqui coloca la duracion del vidio-->    
+                                <a href="content-page.html" class="position-absolute tm-img-overlay">
+                                    <i class="fas fa-play tm-overlay-icon"></i>
+                                </a>
+                            </div>    
+                            <div class="p-4 tm-bg-gray tm-catalog-item-description">
+                                <h3 class="tm-text-primary mb-3 tm-catalog-item-title">Video 1</h3>
+                                <ul class="video-meta">
+                                    <li><strong>Título:</strong> Las Muertas</li>
+                                    <li><strong>Autor:</strong> Marcela del Río</li>
+                                    <li><strong>Género:</strong> Drama psicológico</li>
+                                    <li><strong>Año:</strong> 2025</li>
+                                    <li><strong>Descripción:</strong> Una historia íntima y tensa entre mujeres atrapadas en un mundo oscuro.</li>
+                                    <li><strong>Etiquetas:</strong> </li>
+                                </ul>
+                                <div class="content-tags">
+                                    <span class="tag">Drone</span>
+                                    <span class="tag">Naturaleza</span>
+                                    <span class="tag">Corto</span>
+                                </div>
+
+                                <div class="contenedor-botones-acciones">
+                                    <button class="boton-accion boton-eliminar">
+                                        <i class="fas fa-trash-alt"></i> Eliminar
+                                    </button>
+                                    <a href="#" class="boton-accion boton-modificar">
+                                        <i class="fas fa-edit"></i> Modificar
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Ficha para los libros-->
+                        <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item">
+                            <div class="position-relative tm-thumbnail-container">
+                               <img src="img/itportada.jpg" alt="Image" class="img-fluid tm-catalog-item-img book-cover rounded">
+                               <a href="content-page.html" class="position-absolute audiolibro-img-overlay">
+                                </a>
+                            </div>    
+                            <div class="p-4 tm-bg-gray tm-catalog-item-description">
+                                <h3 class="tm-text-primary mb-3 tm-catalog-item-title">Libro 1</h3>
+                                <ul class="video-meta">
+                                    <li><strong>Título:</strong> Las Muertas</li>
+                                    <li><strong>Autor:</strong> Marcela del Río</li>
+                                    <li><strong>Género:</strong> Drama psicológico</li>
+                                    <li><strong>Paginas:</strong> 2</li>
+                                    <li><strong>Año de publicacion:</strong> 2025</li>
+                                    <li><strong>Descripción:</strong> Una historia íntima y tensa entre mujeres atrapadas en un mundo oscuro.</li>
+                                    <li><strong>Etiquetas:</strong> </li>
+                                </ul>
+                                <div class="content-tags">
+                                    <span class="tag">Drone</span>
+                                    <span class="tag">Naturaleza</span>
+                                    <span class="tag">Corto</span>
+                                </div>
+                                <div class="contenedor-botones-acciones">
+                                    <button class="boton-accion boton-eliminar">
+                                        <i class="fas fa-trash-alt"></i> Eliminar
+                                    </button>
+                                    <a href="#" class="boton-accion boton-modificar">
+                                        <i class="fas fa-edit"></i> Modificar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ficha para los audiolibros -->
+                        <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item">
+                            <div class="position-relative tm-thumbnail-container">
+                                <img src="img/Libro_olvido.jpg" alt="Image" class="img-fluid tm-catalog-item-img book-cover">
+                                <span class="audiolibro-duration">12:34</span> <!-- Aqui coloca la duracion del audiolibro-->    
+                                <a href="content-page.html" class="position-absolute audiolibro-img-overlay">
+                                    <i class="fas fa-play tm-overlay-icon"></i>
+                                </a>
+                            </div>    
+                            <div class="p-4 tm-bg-gray tm-catalog-item-description">
+                                <h3 class="tm-text-primary mb-3 tm-catalog-item-title">Audio libro 1</h3>
+                                <ul class="video-meta">
+                                    <li><strong>Título:</strong> Las Muertas</li>
+                                    <li><strong>Autor:</strong> Marcela del Río</li>
+                                    <li><strong>Género:</strong> Drama psicológico</li>
+                                    <li><strong>Año de publicacion:</strong> 2025</li>
+                                    <li><strong>Descripción:</strong> Una historia íntima y tensa entre mujeres atrapadas en un mundo oscuro.</li>
+                                    <li><strong>Etiquetas:</strong> </li>
+                                </ul>
+                                <div class="content-tags">
+                                    <span class="tag">Drone</span>
+                                    <span class="tag">Naturaleza</span>
+                                    <span class="tag">Corto</span>
+                                </div>
+                                <div class="contenedor-botones-acciones">
+                                    <button class="boton-accion boton-eliminar">
+                                        <i class="fas fa-trash-alt"></i> Eliminar
+                                    </button>
+                                    <a href="#" class="boton-accion boton-modificar">
+                                        <i class="fas fa-edit"></i> Modificar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ficha para los musica -->
+                        <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item">
+                            <div class="position-relative tm-thumbnail-container">
+                                <img src="img/daft.jpg" alt="Image" class="img-fluid tm-catalog-item-img music-cover">
+                                <span class="music-duration">12:34</span> <!-- Aqui coloca la duracion la cancion-->    
+                                <a href="content-page.html" class="position-absolute overlay-music">
+                                    <i class="fas fa-play tm-overlay-icon"></i>
+                                </a>
+                            </div>    
+                            <div class="p-4 tm-bg-gray tm-catalog-item-description">
+                                <h3 class="tm-text-primary mb-3 tm-catalog-item-title">Daft punks</h3>
+                                <ul class="video-meta">
+                                    <li><strong>Título:</strong> Las Muertas</li>
+                                    <li><strong>Autor:</strong> Marcela del Río</li>
+                                    <li><strong>Género:</strong> Drama psicológico</li>
+                                    <li><strong>Año de publicacion:</strong> 2025</li>
+                                    <li><strong>Descripción:</strong> Una historia íntima y tensa entre mujeres atrapadas en un mundo oscuro.</li>
+                                    <li><strong>Etiquetas:</strong> </li>
+                                </ul>
+                                <div class="content-tags">
+                                    <span class="tag">Drone</span>
+                                    <span class="tag">Naturaleza</span>
+                                    <span class="tag">Corto</span>
+                                </div>
+                                <div class="contenedor-botones-acciones">
+                                    <button class="boton-accion boton-eliminar">
+                                        <i class="fas fa-trash-alt"></i> Eliminar
+                                    </button>
+                                    <a href="#" class="boton-accion boton-modificar">
+                                        <i class="fas fa-edit"></i> Modificar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item">
+                            <div class="position-relative tm-thumbnail-container">
+                                <img src="img/dadishus.jpg" alt="Image" class="img-fluid tm-catalog-item-img music-cover">
+                                <span class="music-duration">4:20</span> <!-- Aqui coloca la duracion la cancion-->    
+                                <a href="content-page.html" class="position-absolute overlay-music">
+                                    <i class="fas fa-play tm-overlay-icon"></i>
+                                </a>
+                            </div>    
+                            <div class="p-4 tm-bg-gray tm-catalog-item-description">
+                                <h3 class="tm-text-primary mb-3 tm-catalog-item-title">Daddy Issues</h3>
+                                <ul class="video-meta">
+                                    <li><strong>Título:</strong> Daddy Issues</li>
+                                    <li><strong>Autor:</strong> The Neighbourhood</li>
+                                    <li><strong>Género:</strong> Drama psicológico</li>
+                                    <li><strong>Año de publicacion:</strong> 2015</li>
+                                    <li><strong>Descripción:</strong> problemas psicológicos o emocionales que surgen de una relación deficiente o ausente con el padre o una figura paterna durante la infancia. </li>
+                                    <li><strong>Etiquetas:</strong> </li>
+                                </ul>
+                                <div class="content-tags">
+                                    <span class="tag">Drogas</span>
+                                    <span class="tag">Problemas</span>
+                                    <span class="tag">Daddy?</span>
+                                    <span class="tag">ISSUES</span>
+                                </div>
+                                <div class="contenedor-botones-acciones">
+                                    <button class="boton-accion boton-eliminar">
+                                        <i class="fas fa-trash-alt"></i> Eliminar
+                                    </button>
+                                    <a href="#" class="boton-accion boton-modificar">
+                                        <i class="fas fa-edit"></i> Modificar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    
+                    </div>
+
+                    
+                </main>
+
+                <!-- row -->
+
+                <footer class="row pt-5">
+                    
+                </footer>
+            </div> <!-- tm-content-container -->
+        </div>
+
+    </div> <!-- .tm-page-wrap -->
+
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+        function setVideoSize() {
+            const vidWidth = 1920;
+            const vidHeight = 1080;
+            let windowWidth = window.innerWidth;
+            let newVidWidth = windowWidth;
+            let newVidHeight = windowWidth * vidHeight / vidWidth;
+            let marginLeft = 0;
+            let marginTop = 0;
+
+            if (newVidHeight < 500) {
+                newVidHeight = 500;
+                newVidWidth = newVidHeight * vidWidth / vidHeight;
+            }
+
+            if(newVidWidth > windowWidth) {
+                marginLeft = -((newVidWidth - windowWidth) / 2);
+            }
+
+            if(newVidHeight > 720) {
+                marginTop = -((newVidHeight - $('#tm-video-container').height()) / 2);
+            }
+
+            const tmVideo = $('#tm-video');
+
+            tmVideo.css('width', newVidWidth);
+            tmVideo.css('height', newVidHeight);
+            tmVideo.css('margin-left', marginLeft);
+            tmVideo.css('margin-top', marginTop);
         }
-        h2 {
-          line-height: 1.2;
-        }
-      </style>
-    </head>
 
-    <body>
-      <h2>HTTP Video Streaming</h2>
-      <p>This video is 61MB and is being streamed instead of downloaded.</p>
-      <p>
-        Feel free to seek through the video and it only loads the part you want to
-        watch
-      </p>
-      <h1>Subir video</h1>
-      <input type="file" id="file" accept="video/*">
-      <button id="uploadBtn">Subir</button>
-      <p id="status"></p>
-      <video id="videoPlayer" width="650" controls muted="muted" autoplay>
-        <source src="/mongo-video" type="video/mp4" />
-      </video>
-      <i>Big Buck Bunny</i>
-      <script>
-        const fileInput = document.getElementById('file');
-        const statusEl = document.getElementById('status');
-        //const player = document.getElementById('player');
+        $(document).ready(function () {
+            /************** Video background *********/
 
-        document.getElementById('uploadBtn').onclick = async () => {
-          const file = fileInput.files?.[0];
-          if (!file) return alert('Selecciona un archivo');
+            setVideoSize();
 
-          const form = new FormData();
-          form.append('file', file);
+            // Set video background size based on window size
+            let timeout;
+            window.onresize = function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(setVideoSize, 100);
+            };
 
-          statusEl.textContent = 'Subiendo...';
-          const res = await fetch('/upload', { method: 'POST', body: form });
-          const data = await res.json();
+            // Play/Pause button for video background      
+            const btn = $("#tm-video-control-button");
 
-          if (!res.ok) {
-            statusEl.textContent = data.error || 'Error';
-            return;
-          }
+            btn.on("click", function (e) {
+                const video = document.getElementById("tm-video");
+                $(this).removeClass();
 
+                if (video.paused) {
+                    video.play();
+                    $(this).addClass("fas fa-pause");
+                } else {
+                    video.pause();
+                    $(this).addClass("fas fa-play");
+                }
+            });
+        })
+    </script>
+</body>
 
-          statusEl.textContent = 'Listo';
-        // apunta el reproductor al endpoint de streaming (usar el videoId, no fileId)
-        //player.src = `/videos/${data.videoId}/streaming`;
-          //player.load();
-          //player.play();
-        };
-      </script>
-  </body>
 </html>
