@@ -35,6 +35,12 @@
         <source src="/mongo-video" type="video/mp4" />
       </video>
       <i>Big Buck Bunny</i>
+      <section class="videos-section">
+      <h2>Videos Disponibles</h2>
+      <div id="videosList" class="videos-grid">
+        <!-- Videos se cargarán aquí -->
+      </div>
+    </section>
       <script>
         const fileInput = document.getElementById('file');
         const statusEl = document.getElementById('status');
@@ -57,12 +63,51 @@
           }
 
 
-          statusEl.textContent = 'Listo';
-        // apunta el reproductor al endpoint de streaming (usar el videoId, no fileId)
-        //player.src = `/videos/${data.videoId}/streaming`;
-          //player.load();
-          //player.play();
-        };
+            statusEl.textContent = 'Listo';
+          // apunta el reproductor al endpoint de streaming (usar el videoId, no fileId)
+          //player.src = `/videos/${data.videoId}/streaming`;
+            //player.load();
+            //player.play();
+          };
+          document.addEventListener('DOMContentLoaded', () => {
+            const videosList = document.getElementById('videosList');
+            
+
+            // Cargar videos al iniciar
+            loadVideos();
+
+            
+            // Cargar lista de videos
+            async function loadVideos() {
+              try {
+                
+                const response = await fetch('/api/videos');
+                const videos = await response.json();
+                videosList.innerHTML = '';
+                
+                videos.forEach(video => {
+                  const videoCard = document.createElement('div');
+                  videoCard.className = 'video-card';
+                  videoCard.innerHTML = `
+                    <div class="video-thumbnail" onclick="window.location.href='visualizar_videos.html?url=${encodeURIComponent(video.url)}'">
+                      <span>
+                        ▶️ ${video.name}</span>
+                    </div>
+                    <div class="video-info">
+                      <h3>${video.name}</h3>
+                    </div>
+                  `;
+                  videosList.appendChild(videoCard);
+                });
+              } catch (err) {
+                console.error('Error al cargar videos:', err);
+              }
+            }
+            
+            
+
+            
+          });
       </script>
   </body>
 </html>
