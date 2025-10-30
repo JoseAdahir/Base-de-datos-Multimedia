@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Catalog</title>
+    <link rel="stylesheet" href="fontawesome/css/all.min.css"> <!-- https://fontawesome.com/ -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+    <!-- https://fonts.google.com/ -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/templatemo-video-catalog.css">
+</head>
+
+<body>
+	<div class="tm-page-wrap mx-auto">
+		<div class="position-relative">
+			<div class="potition-absolute tm-site-header">
+				<div class="container-fluid position-relative">
+					<div class="row">						
+                        <div class="col-7 col-md-4">
+                            <a href="index.html" class="tm-bg-black text-center tm-logo-container">
+                                <i class="fas fa-arrow-left tm-site-logo mb-3"></i>
+                                <h1 class="tm-site-name">Regresar</h1>
+                            </a>
+                        </div>
+					</div>
+				</div>
+			</div>
+			<div class="tm-welcome-container tm-fixed-header tm-fixed-header-2">
+				<div class="text-center">
+					<p class="pt-5 px-3 tm-welcome-text tm-welcome-text-2 mb-1 text-white mx-auto">Ingresa los datos del contenido</p>                	
+				</div>                
+            </div>
+
+			<!-- Header image -->
+            <div id="tm-fixed-header-bg" ></div>
+            
+		</div>
+
+		<!-- Page content -->
+		<div class="container-fluid" >
+			<div class="login-page">   
+            <div class="login-container">
+            <form class="agregar-form">
+                <div class="form-group">
+                    <input type="text" placeholder="Titulo" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="Autor" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="Genero" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <input type="number" placeholder="Año de publicacion" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="Descripcion" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="Etiquetas" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <input type="number" placeholder="Paginas" class="form-input">
+                </div>
+                    
+                <label class="radio-group-label">Tipo de Archivo:</label>
+
+                <div class="radio-options-container">
+                    <div class="radio-option">
+                        <input type="radio" id="tipo-video" name="tipo_archivo" value="video" required>
+                        <label for="tipo-video">Video</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="tipo-musica" name="tipo_archivo" value="musica">
+                        <label for="tipo-musica">Música</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="tipo-libro" name="tipo_archivo" value="libro">
+                        <label for="tipo-libro">Libro</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="tipo-audio" name="tipo_archivo" value="audiolibro">
+                        <label for="tipo-audio">Audio Libro</label>
+                    </div>
+                </div>
+
+                <input type="file" id="subir-archivo-input" name="mi_archivo" class="input-file-hidden" required>
+                <label for="subir-archivo-input" id="label-subir-archivo" class="btn-subir-archivo">
+                    Seleccionar Archivo
+                </label>
+
+                <div class="d-flex justify-content-center">
+                <button type="submit" class="login-button" style="color: black;">Registrar</button>
+                </div>
+            </form>
+            
+        </div>
+    </div> 
+		</div>
+	</div>
+
+	<script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+    	$(document).ready(function() {
+    		$('.tm-likes-box').click(function(e) {
+    			e.preventDefault();
+    			$(this).toggleClass('tm-liked');
+
+    			if($(this).hasClass('tm-liked')) {
+    				$('#tm-likes-count').html('486 likes');
+    			} else {
+    				$('#tm-likes-count').html('485 likes');
+    			}
+    		});
+    	});
+    </script>
+</body>
+</html>
