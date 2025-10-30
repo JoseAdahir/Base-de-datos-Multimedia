@@ -20,6 +20,7 @@
   "homepage": "https://github.com/JoseAdahir/Base-de-datos-Multimedia#readme",
   "description": "",
   "dependencies": {
+    "busboy": "^1.6.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "mongodb": "^6.20.0"
