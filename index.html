@@ -80,34 +80,44 @@
             // Cargar lista de videos
             async function loadVideos() {
               try {
-                
-                const response = await fetch('/api/videos');
-                const videos = await response.json();
+                const response = await fetch('/listar-videos');
+                const data = await response.json();
+                const videoData = data.videos || [];
                 videosList.innerHTML = '';
+                console.log(videoData);
+                if (videoData.length === 0) {
+                  videosList.innerHTML = '<p style="text-align:center; color:#666;">No hay videos disponibles. Sube uno primero.</p>';
+                  return;
+                }
                 
-                videos.forEach(video => {
+                videoData.forEach(video => {
                   const videoCard = document.createElement('div');
+ 
+                  console.log(video.filename);
                   videoCard.className = 'video-card';
                   videoCard.innerHTML = `
-                    <div class="video-thumbnail" onclick="window.location.href='visualizar_videos.html?url=${encodeURIComponent(video.url)}'">
-                      <span>
-                        ▶️ ${video.name}</span>
+                    <div class="video-thumbnail" onclick="playVideo('${video.filename}')">
+                      <span>▶️ ${video.filename}</span>
                     </div>
                     <div class="video-info">
-                      <h3>${video.name}</h3>
+                      <h3>${video.filename}</h3>
+                      <p>Tamaño: ${(video.length / 1024 / 1024).toFixed(2)} MB</p>
+                      <p>Subido: ${new Date(video.uploadDate).toLocaleDateString()}</p>
                     </div>
                   `;
                   videosList.appendChild(videoCard);
                 });
               } catch (err) {
                 console.error('Error al cargar videos:', err);
+                videosList.innerHTML = '<p style="text-align:center; color:red;">Error al cargar videos</p>';
               }
             }
-            
-            
-
-            
           });
+
+          // Función global para reproducir videos
+          function playVideo(filename) {
+            window.location.href = `visualizar_videos.html?video=${encodeURIComponent(filename)}`;
+          }
       </script>
   </body>
 </html>
