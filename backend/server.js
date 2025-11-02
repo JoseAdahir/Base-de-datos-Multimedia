@@ -1,354 +1,502 @@
-import dotenv from 'dotenv';
 import express from 'express';
+import dotenv from 'dotenv';
+import mongodb from 'mongodb';
 import fs from 'fs';
-import path from 'path';
-import multer from 'multer';
-import cors from 'cors';
-import morgan from 'morgan';
+import Busboy from 'busboy';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 
-const app = express();
+const { MongoClient, GridFSBucket } = mongodb;
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config();
-import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  "https://uuwewypnofukynlndlsu.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1d2V3eXBub2Z1a3lubG5kbHN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4NDE5ODMsImV4cCI6MjA2NTQxNzk4M30.4phV5-9SNaPaq3XgNLueAQSwxl9Oltd3F5IIyourrOw"
-);
+const router = express.Router();
+const url = process.env.URL || 'mongodb://localhost:27017/';
 
 
-// Configuración
-const PORT = process.env.PORT || 5000;
-const UPLOADS_FOLDER = path.resolve(process.env.UPLOADS_FOLDER);
-const IMAGES_FOLDER = path.resolve(process.env.IMAGES_FOLDER || path.join(UPLOADS_FOLDER, 'images'));
-const MAX_FILE_SIZE = process.env.MAX_FILE_SIZE_MB * 1024 * 1024 *1024;
-const ALLOWED_TYPES = process.env.ALLOWED_VIDEO_TYPES.split(',');
-const ALLOWED_IMAGE_TYPES = process.env.ALLOWED_IMAGE_TYPES?.split(',') || ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+// Serve static files
+router.use(express.static(__dirname));
 
-// Crear carpeta de uploads si no existe
-if (!fs.existsSync(UPLOADS_FOLDER)) {
-  fs.mkdirSync(UPLOADS_FOLDER, { recursive: true });
-}
-if (!fs.existsSync(IMAGES_FOLDER)) {
-  fs.mkdirSync(IMAGES_FOLDER, { recursive: true });
-}
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(morgan('dev'));
-app.use(express.static('public'));
-
-// Configuración de Multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, UPLOADS_FOLDER);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
-  }
+router.get("/", function(req, res){
+    res.sendFile(join(__dirname, "index.html"));
 });
+console.log("La url es "+url);
 
-const fileFilter = (req, file, cb) => {
-  const ext = path.extname(file.originalname).toLowerCase().substring(1);
-  if (ALLOWED_TYPES.includes(ext)) {
-    cb(null, true);
-  } else {
-    cb(new Error(`Solo se permiten archivos de tipo: ${ALLOWED_TYPES.join(', ')}`), false);
-  }
-};
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: MAX_FILE_SIZE },
-  fileFilter: fileFilter
-}).single('video');
-
-// Configuración de Multer para imágenes
-const imageStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, IMAGES_FOLDER);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
-  }
-});
-
-const imageFileFilter = (req, file, cb) => {
-  const ext = path.extname(file.originalname).toLowerCase().substring(1);
-  if (ALLOWED_IMAGE_TYPES.includes(ext)) {
-    cb(null, true);
-  } else {
-    cb(new Error(`Solo se permiten archivos de imagen de tipo: ${ALLOWED_IMAGE_TYPES.join(', ')}`), false);
-  }
-};
-
-const uploadImage = multer({
-  storage: imageStorage,
-  limits: { fileSize: MAX_FILE_SIZE },
-  fileFilter: imageFileFilter
-}).single('image');
-
-// Rutas
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-app.get("/getMetadatos", async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from("pruebas_acervo")
-      .select("id, titulo_original, basado_en, genero, sinopsis, video_titulo, poster_name, ano_estreno");
-    if (error) {
-      return res.status(500).json({ error: error.message });
-    }
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Listar videos disponibles
-app.get('/api/videos', (req, res) => {
-  fs.readdir(UPLOADS_FOLDER, (err, files) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error al leer los videos' });
-    }
-
-    const videos = files
-      .filter(file => {
-        const ext = path.extname(file).toLowerCase().substring(1);
-        return ALLOWED_TYPES.includes(ext);
-      })
-      .map(file => ({
-        name: file,
-        url: `/api/videos/stream/${file}`
-      }));
-
-    res.json(videos);
-  });
-});
-
-// Subir video
-app.post('/api/videos', (req, res) => {
-  upload(req, res, (err) => {
-    if (err) {
-      return res.status(400).json({ error: err.message });
+// Ruta para inicializar la carga de video a MongoDB (Test)
+router.get('/init-video', async function(req, res){
+    console.log("Iniciando carga de video...");
+    
+    const videoPath = join(__dirname, 'cat.mp4');
+    if (!fs.existsSync(videoPath)) {
+        console.error('❌ El archivo miVideo.mp4 no existe');
+        res.status(404).json({ error: 'Archivo no encontrado' });
+        return;
     }
     
-    if (!req.file) {
-      return res.status(400).json({ error: 'No se subió ningún archivo' });
-    }
-
-    res.json({
-      message: 'Video subido con éxito',
-      file: req.file.filename,
-      path: `/uploads/${req.file.filename}`,
-      url: `/api/videos/stream/${req.file.filename}`
-    });
-  });
-});
-
-// Stream de video
-app.get('/api/videos/stream/:filename', (req, res) => {
-  const filename = req.params.filename;
-  const videoPath = path.join(UPLOADS_FOLDER, filename);
-
-  // Verificar si el archivo existe
-  if (!fs.existsSync(videoPath)) {
-    return res.status(404).send('Video no encontrado');
-  }
-
-  const stat = fs.statSync(videoPath);
-  const fileSize = stat.size;
-  const range = req.headers.range;
-
-  if (range) {
-    // Streaming por partes (Range requests)
-    const parts = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-    const chunksize = (end - start) + 1;
-    
-    const file = fs.createReadStream(videoPath, { start, end });
-    const head = {
-      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': chunksize,
-      'Content-Type': 'video/mp4'
-    };
-
-    res.writeHead(206, head);
-    file.pipe(res);
-  } else {
-    // Enviar todo el video si no hay range
-    const head = {
-      'Content-Length': fileSize,
-      'Content-Type': 'video/mp4'
-    };
-    
-    res.writeHead(200, head);
-    fs.createReadStream(videoPath).pipe(res);
-  }
-});
-
-// === RUTAS DE IMAGEN ===
-
-// Listar imágenes disponibles
-app.get('/api/images', (req, res) => {
-  fs.readdir(IMAGES_FOLDER, (err, files) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error al leer las imágenes' });
-    }
-
-    const images = files
-      .filter(file => {
-        const ext = path.extname(file).toLowerCase().substring(1);
-        return ALLOWED_IMAGE_TYPES.includes(ext);
-      })
-      .map(file => {
-        const filePath = path.join(IMAGES_FOLDER, file);
-        const stats = fs.statSync(filePath);
+    let client;
+    try {
+        client = await MongoClient.connect(url);
+        console.log("✅ MongoDB connection successful");
         
-        return {
-          name: file,
-          url: `/api/images/serve/${file}`,
-          size: stats.size,
-          modified: stats.mtime
+        const db = client.db('bibliotecMultimedia');
+        const bucket = new GridFSBucket(db);
+        const videoUploadStream = bucket.openUploadStream('cat');
+        const videoReadStream = fs.createReadStream(videoPath);
+        
+        // Usar promesa para esperar a que termine
+        await new Promise((resolve, reject) => {
+            videoReadStream.pipe(videoUploadStream);
+            
+            videoUploadStream.on('error', (err) => {
+                console.error('❌ Error al subir video:', err);
+                reject(err);
+            });
+            
+            videoUploadStream.on('finish', () => {
+                console.log('✅ Video subido correctamente a MongoDB');
+                resolve();
+            });
+            
+            videoReadStream.on('error', (err) => {
+                console.error('❌ Error al leer archivo:', err);
+                reject(err);
+            });
+        });
+        
+        await client.close();
+        res.status(200).json({ 
+            success: true, 
+            message: 'Video subido correctamente' 
+        });
+        
+    } catch (error) {
+        console.error('❌ Error:', error.message);
+        if (client) {
+            await client.close();
+        }
+        res.status(500).json({ 
+            error: 'Error al subir video', 
+            details: error.message 
+        });
+    }
+});
+
+router.get('/api/item/:id', async (req, res) => {
+    let client;
+    try {
+        const { id } = req.params;
+        
+        // Valida que el ID sea un ObjectId válido de MongoDB
+        if (!mongodb.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'ID de item inválido' });
+        }
+        
+        client = await MongoClient.connect(url);
+        const db = client.db('bibliotecMultimedia');
+        
+        // Busca en tu colección 'videos' (donde guardas los metadatos)
+        const item = await db.collection('videos').findOne({ _id: new mongodb.ObjectId(id) });
+        
+        if (!item) {
+            await client.close();
+            return res.status(404).json({ error: 'Item no encontrado' });
+        }
+        
+        await client.close();
+        res.status(200).json(item); // Devuelve el JSON del item (titulo, autor, fileId, etc.)
+
+    } catch (error) {
+        console.error('❌ Error en /api/item/:id:', error.message);
+        if (client) await client.close();
+        res.status(500).json({ error: 'Error al obtener el item', details: error.message });
+    }
+});
+
+router.get('/api/media/:fileId', async (req, res) => {
+    let client;
+    try {
+        const { fileId } = req.params;
+        if (!mongodb.ObjectId.isValid(fileId)) {
+            return res.status(400).json({ error: 'fileId inválido' });
+        }
+        const _id = new mongodb.ObjectId(fileId);
+
+        client = await MongoClient.connect(url);
+        const db = client.db('bibliotecMultimedia');
+        
+        // Usa el bucket 'fs' por defecto, donde probablemente están tus archivos
+        const bucket = new GridFSBucket(db, { bucketName: 'videos' });
+        const file = await db.collection('videos.files').findOne({ _id: _id }); 
+
+        if (!file) {
+            await client.close();
+            return res.status(404).send("Archivo no encontrado en GridFS");
+        }
+
+        const fileSize = file.length;
+        const mimeType = file.contentType;
+
+        if (fileSize === 0) {
+            await client.close();
+            return res.status(204).send('Archivo vacío'); 
+        }
+
+        const range = req.headers.range;
+
+        if (!range) {
+            await client.close();
+            return res.status(400).send("Se requiere el encabezado 'Range' para streaming");
+        }
+
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        let end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+
+        if (start >= fileSize) {
+            await client.close();
+            res.status(416).send(`Rango no satisfactorio: ${start} excede el tamaño del archivo ${fileSize}`);
+            return;
+        }
+        
+        if (end >= fileSize) {
+            end = fileSize - 1;
+        }
+        
+        const contentLength = (end - start) + 1;
+
+        const headers = {
+            "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": contentLength,
+            "Content-Type": mimeType
         };
+        
+        res.writeHead(206, headers);
+
+        // ===== LA LÍNEA CORREGIDA ESTÁ AQUÍ =====
+        // Le pedimos que lea hasta 'end + 1' para que el rango sea inclusivo
+        // y coincida con el contentLength
+        const downloadStream = bucket.openDownloadStream(_id, { 
+            start: start,
+            end: end + 1 // <--- ¡AQUÍ ESTÁ EL CAMBIO!
+        });
+        // ======================================
+        
+        req.on('close', () => {
+            downloadStream.abort();
+            if (client) client.close();
+        });
+        
+        downloadStream.on('error', (err) => {
+            console.error('❌ Error al transmitir media:', err);
+            if (client) client.close();
+        });
+
+        downloadStream.on('end', () => {
+            if (client) client.close();
+        });
+        
+        downloadStream.pipe(res);
+
+    } catch (error) {
+        console.error('❌ Error en /api/media/:fileId:', error.message);
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Error al reproducir media' });
+        }
+        if (client) await client.close();
+    }
+});
+
+
+router.get('/listar-videos', async function(req, res){
+    let client;
+    try {
+        client = await MongoClient.connect(url);
+        console.log("✅ MongoDB connection successful");
+        const db = client.db('bibliotecMultimedia');
+        const videos = await db.collection('videos.files').find({}).toArray();
+        console.log(`✅ Found ${videos.length} videos in GridFS`); 
+        res.status(200).json(videos);
+        await client.close();
+        
+    } catch (error) {
+        console.error('❌ Error al listar videos:', error.message);
+        if (client) {
+            await client.close();
+        }
+        res.status(500).json({
+            error: 'Error al listar videos',
+            details: error.message
+        });
+    }
+});
+
+
+router.get('/mongo-video', async function(req, res){
+    let client;
+    try {
+        client = await MongoClient.connect(url);
+        
+        const range = req.headers.range;
+        if (!range) {
+            res.status(400).send("Se requiere el encabezado Range");
+            await client.close();
+            return;
+        }
+        
+        const db = client.db('bibliotecMultimedia');
+        const video = await db.collection('videos.files').findOne({ filename: 'miVideo.mp4' });
+        
+        if (!video) {
+            res.status(404).send("Video no encontrado. Primero sube un video usando /init-video");
+            await client.close();
+            return;
+        }
+
+        const videoSize = video.length;
+        const start = Number(range.replace(/\D/g, ""));
+        const end = videoSize - 1;
+
+        const contentLength = end - start + 1;
+        const headers = {
+            "Content-Range": `bytes ${start}-${end}/${videoSize}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": contentLength,
+            "Content-Type": "video/mp4"
+        };
+
+        console.log("start:", start, "end:", end, "contentLength:", contentLength);
+        
+        res.writeHead(206, headers); // 206 = Partial Content
+        
+        const bucket = new GridFSBucket(db, { bucketName: 'videos' });
+        // Usar el _id del archivo para abrir el stream con start/end (end + 1 para exclusividad)
+        const downloadStream = bucket.openDownloadStream(video._id, {
+            start: start,
+            end: end + 1
+        });
+        
+        downloadStream.on('error', (err) => {
+            console.error('❌ Error al transmitir video:', err);
+            if (client) client.close();
+        });
+        
+        downloadStream.on('end', () => {
+            if (client) client.close();
+        });
+        
+        downloadStream.pipe(res);
+        
+    } catch (error) {
+        console.error('❌ Error en /mongo-video:', error.message);
+        if (client) {
+            await client.close();
+        }
+        if (!res.headersSent) {
+            res.status(500).json({ 
+                error: 'Error al reproducir video', 
+                details: error.message 
+            });
+        }
+    }
+});
+
+
+router.get('/mongo-video/:filename', async function(req, res){
+    let client;
+    try {
+        client = await MongoClient.connect(url);
+        const filename = req.params.filename;
+        const range = req.headers.range;
+        if (!range) {
+            res.status(400).send("Se requiere el encabezado Range");
+            await client.close();
+            return;
+        }
+        
+        const db = client.db('bibliotecMultimedia');
+        const video = await db.collection('videos.files').findOne({ filename: filename });
+        
+        if (!video) {
+            res.status(404).send("Video no encontrado. Primero sube un video usando /init-video");
+            await client.close();
+            return;
+        }
+
+        const videoSize = video.length;
+        const start = Number(range.replace(/\D/g, ""));
+        const end = videoSize - 1;
+
+        const contentLength = end - start + 1;
+        const headers = {
+            "Content-Range": `bytes ${start}-${end}/${videoSize}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": contentLength,
+            "Content-Type": "video/mp4"
+        };
+
+        console.log("start:", start, "end:", end, "contentLength:", contentLength);
+        
+        res.writeHead(206, headers); // 206 = Partial Content
+        
+        const bucket = new GridFSBucket(db, { bucketName: 'videos' });
+        // Usar el _id del archivo para abrir el stream con start/end (end + 1 para exclusividad)
+        const downloadStream = bucket.openDownloadStream(video._id, {
+            start: start,
+            end: end + 1
+        });
+        
+        downloadStream.on('error', (err) => {
+            console.error('❌ Error al transmitir video:', err);
+            if (client) client.close();
+        });
+        
+        downloadStream.on('end', () => {
+            if (client) client.close();
+        });
+        
+        downloadStream.pipe(res);
+        
+    } catch (error) {
+        console.error('❌ Error en /mongo-video:', error.message);
+        if (client) {
+            await client.close();
+        }
+        if (!res.headersSent) {
+            res.status(500).json({ 
+                error: 'Error al reproducir video', 
+                details: error.message 
+            });
+        }
+    }
+});
+
+
+router.post('/upload', async function (req, res) {
+  const bb = Busboy({ headers: req.headers, limits: { files: 1, fileSize: 1024 * 1024 * 1024 } }); // 1GB ejemplo
+  
+  let client;
+  let fileIdInGridFS = null;
+  let fileMeta = { originalName: null, mimeType: null, size: 0 };
+  
+  // --- Objeto para guardar los campos de texto ---
+  const fields = {};
+
+  try {
+    client = await MongoClient.connect(url);
+    const db = client.db('bibliotecMultimedia');
+
+    // --- Escucha los campos de texto ---
+    bb.on('field', (name, val, info) => {
+        console.log(`Campo [${name}]: valor: ${val}`);
+        fields[name] = val;
+    });
+
+    bb.on('file', (name, file, info) => {
+      const { filename, mimeType } = info;
+
+      // Valida MIME básico (video, audio, libro/pdf, musica/mp3)
+      // Puedes hacer esto más estricto si quieres
+      if (!/^(video|audio|application|image)/.test(mimeType)) { 
+        file.resume();
+        return res.status(400).json({ error: 'Tipo de archivo no permitido' });
+      }
+
+      fileMeta.originalName = filename;
+      fileMeta.mimeType = mimeType;
+
+      const gridfs = new GridFSBucket(db, { bucketName: 'videos' }); // Puedes cambiar 'videos' por 'fs' si prefieres
+      const uploadStream = gridfs.openUploadStream(filename, {
+        contentType: mimeType,
+        metadata: { 
+            source: 'web-upload',
+            // --- Guarda los campos de texto como metadatos ---
+            // (Esto es opcional, pero útil)
+            titulo: fields.titulo,
+            autor: fields.autor,
+            genero: fields.genero,
+            tipo: fields.tipo_archivo
+        }
       });
 
-    res.json(images);
-  });
-});
+      fileIdInGridFS = uploadStream.id;
 
-// Subir imagen
-app.post('/api/images', (req, res) => {
-  uploadImage(req, res, (err) => {
-    if (err) {
-      return res.status(400).json({ error: err.message });
-    }
-    
-    if (!req.file) {
-      return res.status(400).json({ error: 'No se subió ningún archivo' });
-    }
+      file.on('data', (chunk) => { fileMeta.size += chunk.length; });
+      file.pipe(uploadStream);
 
-    res.json({
-      message: 'Imagen subida con éxito',
-      file: req.file.filename,
-      path: `/images/${req.file.filename}`,
-      url: `/api/images/serve/${req.file.filename}`,
-      size: req.file.size,
-      mimetype: req.file.mimetype
-    });
-  });
-});
+      uploadStream.on('error', (err) => {
+        console.error(err);
+        if(client) client.close();
+        return res.status(500).json({ error: 'Error guardando en GridFS' });
+      });
 
-// Servir imagen
-app.get('/api/images/serve/:filename', (req, res) => {
-  const filename = req.params.filename;
-  const imagePath = path.join(IMAGES_FOLDER, filename);
+      uploadStream.on('finish', async () => {
+        try {
+          const now = new Date();
+          const videosCol = db.collection('videos'); // Esta es tu colección de metadatos
 
-  // Verificar si el archivo existe
-  if (!fs.existsSync(imagePath)) {
-    return res.status(404).json({ error: 'Imagen no encontrada' });
-  }
+          // --- Construye el documento de metadatos CON TUS CAMPOS ---
+          const metaDoc = {
+            // Usa los campos del formulario, con un fallback
+            titulo: fields.titulo || fileMeta.originalName,
+            autor: fields.autor || null,
+            genero: fields.genero || null,
+            ano_publicacion: fields.ano_publicacion ? parseInt(fields.ano_publicacion) : null,
+            descripcion: fields.descripcion || '',
+            etiquetas: fields.etiquetas ? fields.etiquetas.split(',').map(tag => tag.trim()) : [],
+            paginas: fields.paginas ? parseInt(fields.paginas) : null,
+            tipo_archivo: fields.tipo_archivo || null,
+            
+            // Info del archivo
+            fileId: uploadStream.id,
+            originalName: fileMeta.originalName,
+            mimeType: fileMeta.mimeType,
+            size: fileMeta.size,
+            
+            // Campos por defecto (como los tenías)
+            ownerId: null,
+            duration: null,
+            status: 'uploaded',
+            visibility: 'public',
+            thumbnails: [],
+            variants: [],
+            counters: { views: 0, likes: 0, comments: 0 },
+            createdAt: now,
+            updatedAt: now,
+            deletedAt: null
+          };
 
-  // Obtener la extensión para determinar el Content-Type
-  const ext = path.extname(filename).toLowerCase().substring(1);
-  const mimeTypes = {
-    'jpg': 'image/jpeg',
-    'jpeg': 'image/jpeg',
-    'png': 'image/png',
-    'gif': 'image/gif',
-    'webp': 'image/webp'
-  };
+          const { insertedId } = await videosCol.insertOne(metaDoc);
+          console.log(`✅ Metadatos guardados con ID: ${insertedId}`);
+          
+          await client.close();
+          return res.status(201).json({
+            videoId: insertedId,
+            fileId: fileIdInGridFS,
+            message: 'Archivo y datos guardados correctamente'
+          });
 
-  const contentType = mimeTypes[ext] || 'application/octet-stream';
-
-  // Configurar headers de cache
-  res.set({
-    'Content-Type': contentType,
-    'Cache-Control': 'public, max-age=86400', // Cache por 1 día
-    'ETag': `"${filename}-${fs.statSync(imagePath).mtime.getTime()}"`
-  });
-
-  // Verificar ETag para cache
-  if (req.headers['if-none-match'] === res.get('ETag')) {
-    return res.status(304).end();
-  }
-
-  // Enviar la imagen
-  res.sendFile(imagePath);
-});
-
-// Eliminar imagen
-app.delete('/api/images/:filename', (req, res) => {
-  const filename = req.params.filename;
-  const imagePath = path.join(IMAGES_FOLDER, filename);
-
-  if (!fs.existsSync(imagePath)) {
-    return res.status(404).json({ error: 'Imagen no encontrada' });
-  }
-
-  fs.unlink(imagePath, (err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error al eliminar la imagen' });
-    }
-    
-    res.json({ message: 'Imagen eliminada con éxito' });
-  });
-});
-
-// Servir archivos de video estáticamente (para el reproductor HTML)
-app.use('/uploads', express.static(UPLOADS_FOLDER));
-app.use('/images', express.static(IMAGES_FOLDER));
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor de streaming en http://localhost:${PORT}`);
-  console.log(`Videos almacenados en: ${UPLOADS_FOLDER}`);
-  console.log(`Imágenes almacenadas en: ${IMAGES_FOLDER}`);
-});
-
-
-app.post("/addMetadato", async (req, res) => {
-  try {
-    const {
-      titulo_original,
-      basado_en,
-      genero,
-      sinopsis,
-      video_titulo,
-      poster_name
-    } = req.body;
-
-    // Generate a unique ID if not auto-generated
-    const uniqueId =  Math.floor(Math.random() * 1000);
-
-    const { data, error } = await supabase
-      .from("pruebas_acervo")
-      .insert([
-        {
-          id: uniqueId,
-          titulo_original,
-          basado_en,
-          genero,
-          sinopsis,
-          video_titulo,
-          poster_name
+        } catch (e) {
+          console.error(e);
+          if (client) await client.close();
+          return res.status(500).json({ error: 'Error guardando metadatos' });
         }
-      ]);
+      });
+    });
 
-    if (error) {
-      return res.status(500).json({ error: error.message });
-    }
+    bb.on('error', (e) => {
+        if(client) client.close();
+        res.status(500).json({ error: 'Error en carga' })
+    });
+    
+    req.pipe(bb);
 
-    res.status(201).json({ message: "Metadato agregado correctamente", data });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (e) {
+      console.error(e);
+      if (client) await client.close();
+      return res.status(500).json({ error: 'Error de conexión con la base de datos' });
   }
 });
+
+export default router;
