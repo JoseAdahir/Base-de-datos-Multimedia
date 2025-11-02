@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        body {
+          margin: 40px auto;
+          max-width: 650px;
+          line-height: 1.6;
+          font-size: 18px;
+          font-family: "Courier New", Courier, monospace;
+          color: #444;
+          padding: 0 10px;
+        }
+        h2 {
+          line-height: 1.2;
+        }
+      </style>
+    </head>
+
+    <body>
+      <video id="videoPlayer" width="650" controls muted="muted" autoplay>
+       
+      </video>
+      <i>Videos</i>
+      
+      <script>
+        const player = document.getElementById('videoPlayer');
+        const params = new URLSearchParams(window.location.search);
+        const videoFilename = params.get('video');
+        
+        console.log('Video a reproducir:', videoFilename);
+        
+        if (videoFilename) {
+          const source = document.createElement('source');
+          source.src = `/mongo-video/${videoFilename}`;
+          source.type = 'video/mp4';
+          
+          player.appendChild(source);
+          player.load();
+          
+          player.play().catch(err => {
+            console.error('Error al reproducir:', err);
+            document.body.innerHTML += '<p style="color:red;">Error al reproducir el video. Asegúrate de que el servidor esté corriendo.</p>';
+          });
+        } else {
+          document.body.innerHTML += '<p style="color:red;">No se especificó un video para reproducir</p>';
+        }
+      </script>
+  </body>
+</html>
