@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mongodb from 'mongodb';
+import dotenv from 'dotenv';
+import mongodb from 'mongodb';
 import fs from 'fs';
 import Busboy from 'busboy';
 import { dirname, join } from 'path';
@@ -11,6 +13,7 @@ import jwt from 'jsonwebtoken';
 
 const { MongoClient, GridFSBucket } = mongodb;
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config();
 
