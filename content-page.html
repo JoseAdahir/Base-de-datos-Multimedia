@@ -4,19 +4,12 @@
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Catalog</title>
-    <link rel="stylesheet" href="fontawesome/css/all.min.css"> <!-- https://fontawesome.com/ -->
+    <link rel="stylesheet" href="fontawesome/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">
-    <!-- https://fonts.google.com/ -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/templatemo-video-catalog.css">
 </head>
-<!--
 
-TemplateMo 552 Video Catalog
-
-https://templatemo.com/tm-552-video-catalog
-
--->
 <body>
 	<div class="tm-page-wrap mx-auto">
 		<div class="position-relative">
@@ -32,50 +25,199 @@ https://templatemo.com/tm-552-video-catalog
 					</div>
 				</div>
 			</div>
-			<div class="tm-welcome-container tm-fixed-header tm-fixed-header-1">
+            <div class="tm-welcome-container tm-fixed-header tm-fixed-header-1">
 				<div class="text-center">
-					<p class="pt-5 px-3 tm-welcome-text tm-welcome-text-2 mb-1 text-white mx-auto">Aqui va el titulo del contenido</p>                	
+					<p class="pt-5 px-3 tm-welcome-text tm-welcome-text-2 mb-1 text-white mx-auto" id="item-titulo">
+                        Cargando...
+                    </p>                	
 				</div>                
             </div>
 
-			<!-- Header image -->
-            <div id="tm-fixed-header-bg"></div> 
+			<div id="tm-fixed-header-bg"></div> 
 		</div>
 
-		<!-- Page content -->
 		<div class="container-fluid">
 			<div class="mx-auto tm-content-container">
 				<main>
-					<div class="row mb-5 pb-4">
+                    <div class="row mb-5 pb-4" id="media-player-container">
 						<div class="col-12">
-							<!-- Video player 1422x800 -->
-							<video width="1422" height="800" controls autoplay>
-							  <source src="video/wheat-field.mp4" type="video/mp4">							  
-							Your browser does not support the video tag.
-							</video>
-						</div>
+							</div>
 					</div>	
 				</main>
-
-			</div> <!-- .tm-content-container -->
-		</div>
+			</div> </div>
 	</div>
 
 	<script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script>
-    	$(document).ready(function() {
-    		$('.tm-likes-box').click(function(e) {
-    			e.preventDefault();
-    			$(this).toggleClass('tm-liked');
+    
+	<script>
 
-    			if($(this).hasClass('tm-liked')) {
-    				$('#tm-likes-count').html('486 likes');
-    			} else {
-    				$('#tm-likes-count').html('485 likes');
-    			}
-    		});
-    	});
+        function formatContentType(tipo) {
+        if (!tipo) return 'Contenido';
+        switch (tipo) {
+            case 'video':
+                return 'Video';
+            case 'libro':
+                return 'Libro';
+            case 'audiolibro':
+                return 'Audio Libro';
+            case 'musica':
+                return 'Música';
+            default:
+                return 'Contenido';
+        }
+    }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const itemTituloEl = document.getElementById('item-titulo');
+            const mediaContainerEl = document.getElementById('media-player-container');
+            
+            // 1. Obtener el ID del item desde la URL
+            const params = new URLSearchParams(window.location.search);
+            const itemId = params.get('id');
+            
+            if (!itemId) {
+                itemTituloEl.textContent = 'Error';
+                mediaContainerEl.innerHTML = '<p class="text-danger col-12">No se especificó un ID de contenido.</p>';
+                return;
+            }
+            
+            try {
+                // 2. Pedir los metadatos del item al backend
+                const response = await fetch(`/api/item/${itemId}`);
+                if (!response.ok) {
+                    throw new Error('No se pudo cargar el item. Es posible que haya sido eliminado.');
+                }
+                const item = await response.json();
+                
+                // 3. Actualizar el título del header
+                const tipoContenido = formatContentType(item.tipo_archivo);
+                let iconClass = 'fas fa-file'; // Icono por defecto
+                switch (item.tipo_archivo) {
+                    case 'video': iconClass = 'fas fa-video'; break;
+                    case 'libro': iconClass = 'fas fa-book-open'; break;
+                    case 'audiolibro': iconClass = 'fas fa-headphones-alt'; break;
+                    case 'musica': iconClass = 'fas fa-music'; break;
+                }
+                itemTituloEl.innerHTML = `<i class="${iconClass} mr-2"></i> ${tipoContenido}: ${item.titulo}`;
+                document.title = `${tipoContenido}: ${item.titulo}`;
+                
+                // 4. Generar el reproductor basado en el tipo de archivo
+                let playerHtml = '';
+                
+                if (item.tipo_archivo === 'video') {
+                    // Primero, generamos el HTML de las etiquetas
+                    const etiquetasHtml = (item.etiquetas || []).map(tag => `<span class="tag">${tag}</span>`).join('');
+                    
+                    // Si es video, crea una estructura de dos columnas
+                    playerHtml = `
+                    <div class="col-12 book-view-container">
+                        <div class="book-meta-column">
+                            <div class="book-cover-image">
+                                <img src="${item.thumbnailId ? `/api/thumbnail/${item.thumbnailId}` : 'img/default-book-cover.jpg'}" alt="Carátula de ${item.titulo}">
+                            </div>
+                            <h2>${item.titulo}</h2>
+                            
+                            <ul class="video-meta" style="list-style: none; padding: 0;">
+                                <li><strong>Autor:</strong> ${item.autor}</li>
+                                <li><strong>Género:</strong> ${item.genero}</li>
+                                <li><strong>Año:</strong> ${item.ano_publicacion}</li>
+                                <li><strong>Descripción:</strong> ${item.descripcion}</li>
+                            </ul>
+                            <hr>
+                            <strong>Etiquetas:</strong>
+                            <div class="content-tags" style="margin-top: 10px;">${etiquetasHtml}</div>
+                        </div>
+
+                        <div class="book-pdf-column"> <video width="100%" height="auto" controls autoplay style="border-radius: 8px;">
+                            <source src="/api/media/${item.fileId}" type="${item.mimeType}">							  
+                            Tu navegador no soporta la etiqueta de video.
+                            </video>
+                        </div>
+                    </div>`;
+                    
+                } else if (item.tipo_archivo === 'audiolibro' || item.tipo_archivo === 'musica') {
+    
+                    // Primero, generamos el HTML de las etiquetas
+                    const etiquetasHtml = (item.etiquetas || []).map(tag => `<span class="tag">${tag}</span>`).join('');
+
+                    // Si es audio o música, crea la vista de dos columnas
+                    playerHtml = `
+                    <div class="col-12 book-view-container">
+                        <div class="book-meta-column">
+                            <div class="book-cover-image">
+                                <img src="${item.thumbnailId ? `/api/thumbnail/${item.thumbnailId}` : 'img/default-book-cover.jpg'}" alt="Carátula de ${item.titulo}">
+                            </div>
+                            <h2>${item.titulo}</h2>
+                            
+                            <ul class="video-meta" style="list-style: none; padding: 0;">
+                                <li><strong>Autor:</strong> ${item.autor}</li>
+                                <li><strong>Género:</strong> ${item.genero}</li>
+                                <li><strong>Año:</strong> ${item.ano_publicacion}</li>
+                                <li><strong>Descripción:</strong> ${item.descripcion}</li> </ul>
+                            <hr>
+                            <strong>Etiquetas:</strong>
+                            <div class="content-tags" style="margin-top: 10px;">${etiquetasHtml}</div>
+                        </div>
+
+                        <div class="audio-player-column">
+                            <audio class="spotify-style-player" controls autoplay>
+                            <source src="/api/media/${item.fileId}" type="${item.mimeType}">
+                            Tu navegador no soporta la etiqueta de audio.
+                            </audio>
+                        </div>
+                    </div>`;
+                    
+                } else if (item.tipo_archivo === 'libro') {
+    
+                    // Primero, generamos el HTML de las etiquetas
+                    const etiquetasHtml = (item.etiquetas || []).map(tag => `<span class="tag">${tag}</span>`).join('');
+
+                    // Si es un libro, crea la vista de dos columnas
+                    playerHtml = `
+                    <div class="col-12 book-view-container">
+                        <div class="book-meta-column">
+                            <div class="book-cover-image">
+                                <img src="${item.thumbnailId ? `/api/thumbnail/${item.thumbnailId}` : 'img/default-book-cover.jpg'}" alt="Carátula de ${item.titulo}">
+                            </div>
+                            <h2>${item.titulo}</h2>
+                            
+                            <ul class="video-meta" style="list-style: none; padding: 0;">
+                                <li><strong>Autor:</strong> ${item.autor}</li>
+                                <li><strong>Género:</strong> ${item.genero}</li> <li><strong>Año:</strong> ${item.ano_publicacion}</li>
+                                <li><strong>Páginas:</strong> ${item.paginas || 'N/A'}</li>
+                                <li><strong>Descripción:</strong> ${item.descripcion}</li>
+                            </ul>
+                            <hr>
+                            <strong>Etiquetas:</strong>
+                            <div class="content-tags" style="margin-top: 10px;">${etiquetasHtml}</div>
+                            
+                        </div>
+
+                        <div class="book-pdf-column">
+                            <iframe 
+                                src="/api/media/${item.fileId}" 
+                                class="pdf-viewer" 
+                                frameborder="0"
+                                title="Visor de PDF para ${item.titulo}">
+                            </iframe>
+                        </div>
+                    </div>`;
+                    
+                } else {
+                    playerHtml = '<p class="text-warning col-12">No se puede reproducir este tipo de contenido.</p>';
+                }
+                
+                // 5. Inyectar el reproductor en la página
+                mediaContainerEl.innerHTML = playerHtml;
+
+            } catch (error) {
+                console.error('Error al cargar contenido:', error);
+                itemTituloEl.textContent = 'Error al cargar';
+                mediaContainerEl.innerHTML = `<p class="text-danger col-12">${error.message}</p>`;
+            }
+        });
     </script>
+    
 </body>
 </html>

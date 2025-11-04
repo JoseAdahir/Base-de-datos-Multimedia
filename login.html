@@ -17,12 +17,12 @@
     <div class="login-page">   
         <div class="login-container">
             <h1 class="sitename">Biblioteca multimedia</h1>
-            <form class="login-form">
+            <form class="login-form" id ="login-form">
                 <div class="form-group">
-                    <input type="text" placeholder="Username" class="form-input">
+                    <input type="text" placeholder="Username" class="form-input" name="username" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" placeholder="Password" class="form-input">
+                    <input type="password" placeholder="Password" class="form-input" name="password" required>
                 </div>
                 <div class="d-flex justify-content-center">
                 <button type="submit" class="login-button"style="color: black;">Inciar sesion</button>
@@ -30,16 +30,53 @@
                 </div>
 
             </form>
+            <div id="status-message" style="color: white; text-align: center; margin-top: 15px;"></div>
             
         </div>
     </div> 
 </main> 
 
-    
-
- <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
   <!-- Main JS File -->
-  <script src="assets/js/main.js"></script>    
+  <script src="assets/js/main.js"></script>
+  
+  <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            const statusMessage = document.getElementById('status-message');
+
+            statusMessage.textContent = 'Iniciando sesión...';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // --- ¡CLAVE! Guardamos el token y el nombre en el navegador ---
+                    localStorage.setItem('authToken', result.token);
+                    localStorage.setItem('authUsername', result.nombre || result.username);
+
+                    statusMessage.style.color = '#4CAF50';
+                    statusMessage.textContent = '¡Éxito! Redirigiendo...';
+                    window.location.href = 'index.html'; // Redirige al catálogo
+                } else {
+                    statusMessage.style.color = '#F44336';
+                    statusMessage.textContent = 'Error: ' + result.error;
+                }
+            } catch (err) {
+                statusMessage.style.color = '#F44336';
+                statusMessage.textContent = 'Error de red. Inténtalo de nuevo.';
+            }
+        });
+    </script>
+
 </body>
 </html>

@@ -41,27 +41,27 @@
 		<div class="container-fluid" >
 			<div class="login-page">   
             <div class="login-container">
-            <form class="agregar-form">
+            <form class="agregar-form" id="uploadForm" enctype="multipart/form-data">
                 <div class="form-group">
-                    <input type="text" placeholder="Titulo" class="form-input" required>
+                    <input type="text" placeholder="Titulo" class="form-input" name="titulo" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" placeholder="Autor" class="form-input" required>
+                    <input type="text" placeholder="Autor" class="form-input" name="autor" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" placeholder="Genero" class="form-input" required>
+                    <input type="text" placeholder="Genero" class="form-input" name="genero" required>
                 </div>
                 <div class="form-group">
-                    <input type="number" placeholder="Año de publicacion" class="form-input" required>
+                    <input type="number" placeholder="Año de publicacion" class="form-input" name="ano_publicacion" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" placeholder="Descripcion" class="form-input" required>
+                    <input type="text" placeholder="Descripcion" class="form-input" name="descripcion" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" placeholder="Etiquetas" class="form-input" required>
+                    <input type="text" placeholder="Etiquetas" class="form-input" name="etiquetas" required>
                 </div>
                 <div class="form-group">
-                    <input type="number" placeholder="Paginas" class="form-input">
+                    <input type="number" placeholder="Paginas" class="form-input" name="paginas">
                 </div>
                     
                 <label class="radio-group-label">Tipo de Archivo:</label>
@@ -90,8 +90,15 @@
                     Seleccionar Archivo
                 </label>
 
+                <input type="file" id="subir-miniatura-input" name="thumbnail" class="input-file-hidden" accept="image/*" required>
+                <label for="subir-miniatura-input" id="label-subir-miniatura" class="btn-subir-archivo">
+                    Seleccionar Miniatura
+                </label>
+
+                <div id="status-message" style="color: white; text-align: center; margin-top: 15px;"></div>
+
                 <div class="d-flex justify-content-center">
-                <button type="submit" class="login-button" style="color: black;">Registrar</button>
+                    <button type="submit" class="login-button" style="color: black;">Registrar</button>
                 </div>
             </form>
             
@@ -115,6 +122,86 @@
     			}
     		});
     	});
+    </script>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Función para manejar la lógica de cambio de etiqueta
+            function setupFileInputLabel(inputId, labelId, defaultText) {
+                const input = document.getElementById(inputId);
+                const label = document.getElementById(labelId);
+                
+                if (input) {
+                    input.addEventListener('change', function() {
+                        if (this.files && this.files.length > 0) {
+                            label.textContent = this.files[0].name;
+                        } else {
+                            label.textContent = defaultText;
+                        }
+                    });
+                }
+            }
+
+            setupFileInputLabel('subir-archivo-input', 'label-subir-archivo', 'Seleccionar Archivo');
+            setupFileInputLabel('subir-miniatura-input', 'label-subir-miniatura', 'Seleccionar Miniatura');
+            
+        });
+
+        // --- SCRIPT PRINCIPAL PARA SUBIR EL FORMULARIO ---
+        
+        // 1. Selecciona el formulario y el mensaje de estado
+        const uploadForm = document.getElementById('uploadForm');
+        const statusMessage = document.getElementById('status-message');
+
+        // 2. Escucha el evento 'submit'
+        uploadForm.addEventListener('submit', async function(e) {
+            
+            // 3. Previene que el formulario se envíe de la forma tradicional
+            e.preventDefault();
+            
+            // Muestra un mensaje de carga
+            statusMessage.style.color = 'white';
+            statusMessage.textContent = 'Subiendo... por favor espera.';
+
+            // 4. Crea un objeto FormData con todos los datos del formulario (gracias a los atributos 'name')
+            const formData = new FormData(uploadForm);
+
+            try {
+                // 5. Envía los datos al servidor usando fetch
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData 
+                    // No necesitas 'headers', el navegador lo pone automáticamente
+                    // para 'multipart/form-data' cuando usas FormData.
+                });
+
+                // 6. Convierte la respuesta del servidor a JSON
+                const result = await response.json();
+
+                // 7. Muestra el mensaje de éxito o error
+                if (response.ok) {
+                    statusMessage.style.color = '#4CAF50'; // Verde
+                    statusMessage.textContent = '¡Éxito! ' + result.message;
+                    uploadForm.reset(); // Limpia el formulario
+                    
+                    // ESTA LÍNEA REINICIA EL BOTÓN DE ARRIBA:
+                    document.getElementById('label-subir-archivo').textContent = 'Seleccionar Archivo';
+                    
+                    // AÑADE ESTA LÍNEA PARA REINICIAR EL BOTÓN DE ABAJO:
+                    document.getElementById('label-subir-miniatura').textContent = 'Seleccionar Miniatura';
+                } else {
+                    statusMessage.style.color = '#F44336'; // Rojo
+                    statusMessage.textContent = 'Error: ' + result.error;
+                }
+
+            } catch (error) {
+                // 8. Muestra un error de red
+                statusMessage.style.color = '#F44336'; // Rojo
+                statusMessage.textContent = 'Error de red. No se pudo conectar al servidor.';
+                console.error('Error en fetch:', error);
+            }
+        });
     </script>
 </body>
 </html>

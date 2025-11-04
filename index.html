@@ -33,10 +33,10 @@
                                     <div class="collapse navbar-collapse tm-nav" id="navbar-nav">
                                         <ul class="navbar-nav text-uppercase">
                                             
-                                                <button type="submit" class="button">
+                                                <button type="submit" class="button" id="logout-btn">
                                                 Cerrar sesion
                                                 </button>
-                                                <a class="name-user">Nombre del usuario</a> <!-- pon el nombre del usuario aki -->
+                                                <a class="name-user" id="username-display">Cargando...</a>
                                            
                                         </ul>
                                     </div>
@@ -74,10 +74,13 @@
                         </div>
 
                          <div class="col-6">
-                            <form class="barra-busqueda">
-                                <input type="text" placeholder="Buscar...">
+                            <form class="barra-busqueda" id="search-form">
+                                <input type="text" placeholder="Buscar..." id="search-input">
                                 <button type="submit">
                                     <i class="fa fa-search"></i>
+                                </button>
+                                <button type="button" id="clear-search-btn">
+                                    <i class="fa fa-times"></i>
                                 </button>
                             </form>
                         </div>
@@ -86,11 +89,11 @@
                         <div class="tm-categories-container">
                                 <h3 class="tm-text-primary tm-categories-text">Categorias:</h3>
                                 <ul class="nav tm-category-list">
-                                    <li class="nav-item tm-category-item"><a href="index.html" class="nav-link tm-category-link active">Todos</a></li>
-                                    <li class="nav-item tm-category-item"><a href="#" class="nav-link tm-category-link">Libros</a></li>
-                                    <li class="nav-item tm-category-item"><a href="#" class="nav-link tm-category-link">Audio libros</a></li>
-                                    <li class="nav-item tm-category-item"><a href="#" class="nav-link tm-category-link">Videos</a></li>
-                                    <li class="nav-item tm-category-item"><a href="#" class="nav-link tm-category-link">Música</a></li>
+                                    <li class="nav-item tm-category-item"><a href="#!" class="nav-link tm-category-link active" data-tipo="all">Todos</a></li>
+                                    <li class="nav-item tm-category-item"><a href="#!" class="nav-link tm-category-link" data-tipo="libro">Libros</a></li>
+                                    <li class="nav-item tm-category-item"><a href="#!" class="nav-link tm-category-link" data-tipo="audiolibro">Audio libros</a></li>
+                                    <li class="nav-item tm-category-item"><a href="#!" class="nav-link tm-category-link" data-tipo="video">Videos</a></li>
+                                    <li class="nav-item tm-category-item"><a href="#!" class="nav-link tm-category-link" data-tipo="musica">Música</a></li>
                                 </ul> 
                         </div>
                         
@@ -104,185 +107,7 @@
                     </div>
 
                     
-                    <div class="row tm-catalog-item-list">
-                        <!-- Estructura para las fichas de los videos, deben de insertarse apartir de aqui -->
-
-                        <!-- Ficha para los videos-->
-                        <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item">
-                            <div class="position-relative tm-thumbnail-container">
-                                <img src="img/tn-01.jpg" alt="Image" class="img-fluid tm-catalog-item-img">
-                                <span class="video-duration">12:34</span> <!-- Aqui coloca la duracion del vidio-->    
-                                <a href="content-page.html" class="position-absolute tm-img-overlay">
-                                    <i class="fas fa-play tm-overlay-icon"></i>
-                                </a>
-                            </div>    
-                            <div class="p-4 tm-bg-gray tm-catalog-item-description">
-                                <h3 class="tm-text-primary mb-3 tm-catalog-item-title">Video 1</h3>
-                                <ul class="video-meta">
-                                    <li><strong>Título:</strong> Las Muertas</li>
-                                    <li><strong>Autor:</strong> Marcela del Río</li>
-                                    <li><strong>Género:</strong> Drama psicológico</li>
-                                    <li><strong>Año:</strong> 2025</li>
-                                    <li><strong>Descripción:</strong> Una historia íntima y tensa entre mujeres atrapadas en un mundo oscuro.</li>
-                                    <li><strong>Etiquetas:</strong> </li>
-                                </ul>
-                                <div class="content-tags">
-                                    <span class="tag">Drone</span>
-                                    <span class="tag">Naturaleza</span>
-                                    <span class="tag">Corto</span>
-                                </div>
-
-                                <div class="contenedor-botones-acciones">
-                                    <button class="boton-accion boton-eliminar">
-                                        <i class="fas fa-trash-alt"></i> Eliminar
-                                    </button>
-                                    <a href="modificar.html" class="boton-accion boton-modificar">
-                                        <i class="fas fa-edit"></i> Modificar
-                                    </a>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <!-- Ficha para los libros-->
-                        <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item">
-                            <div class="position-relative tm-thumbnail-container">
-                               <img src="img/itportada.jpg" alt="Image" class="img-fluid tm-catalog-item-img book-cover rounded">
-                               <a href="content-page.html" class="position-absolute audiolibro-img-overlay">
-                                </a>
-                            </div>    
-                            <div class="p-4 tm-bg-gray tm-catalog-item-description">
-                                <h3 class="tm-text-primary mb-3 tm-catalog-item-title">Libro 1</h3>
-                                <ul class="video-meta">
-                                    <li><strong>Título:</strong> Las Muertas</li>
-                                    <li><strong>Autor:</strong> Marcela del Río</li>
-                                    <li><strong>Género:</strong> Drama psicológico</li>
-                                    <li><strong>Paginas:</strong> 2</li>
-                                    <li><strong>Año de publicacion:</strong> 2025</li>
-                                    <li><strong>Descripción:</strong> Una historia íntima y tensa entre mujeres atrapadas en un mundo oscuro.</li>
-                                    <li><strong>Etiquetas:</strong> </li>
-                                </ul>
-                                <div class="content-tags">
-                                    <span class="tag">Drone</span>
-                                    <span class="tag">Naturaleza</span>
-                                    <span class="tag">Corto</span>
-                                </div>
-                                <div class="contenedor-botones-acciones">
-                                    <button class="boton-accion boton-eliminar">
-                                        <i class="fas fa-trash-alt"></i> Eliminar
-                                    </button>
-                                    <a href="#" class="boton-accion boton-modificar">
-                                        <i class="fas fa-edit"></i> Modificar
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Ficha para los audiolibros -->
-                        <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item">
-                            <div class="position-relative tm-thumbnail-container">
-                                <img src="img/Libro_olvido.jpg" alt="Image" class="img-fluid tm-catalog-item-img book-cover">
-                                <span class="audiolibro-duration">12:34</span> <!-- Aqui coloca la duracion del audiolibro-->    
-                                <a href="content-page.html" class="position-absolute audiolibro-img-overlay">
-                                    <i class="fas fa-play tm-overlay-icon"></i>
-                                </a>
-                            </div>    
-                            <div class="p-4 tm-bg-gray tm-catalog-item-description">
-                                <h3 class="tm-text-primary mb-3 tm-catalog-item-title">Audio libro 1</h3>
-                                <ul class="video-meta">
-                                    <li><strong>Título:</strong> Las Muertas</li>
-                                    <li><strong>Autor:</strong> Marcela del Río</li>
-                                    <li><strong>Género:</strong> Drama psicológico</li>
-                                    <li><strong>Año de publicacion:</strong> 2025</li>
-                                    <li><strong>Descripción:</strong> Una historia íntima y tensa entre mujeres atrapadas en un mundo oscuro.</li>
-                                    <li><strong>Etiquetas:</strong> </li>
-                                </ul>
-                                <div class="content-tags">
-                                    <span class="tag">Drone</span>
-                                    <span class="tag">Naturaleza</span>
-                                    <span class="tag">Corto</span>
-                                </div>
-                                <div class="contenedor-botones-acciones">
-                                    <button class="boton-accion boton-eliminar">
-                                        <i class="fas fa-trash-alt"></i> Eliminar
-                                    </button>
-                                    <a href="agregar.html" class="boton-accion boton-modificar">
-                                        <i class="fas fa-edit"></i> Modificar
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Ficha para los musica -->
-                        <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item">
-                            <div class="position-relative tm-thumbnail-container">
-                                <img src="img/daft.jpg" alt="Image" class="img-fluid tm-catalog-item-img music-cover">
-                                <span class="music-duration">12:34</span> <!-- Aqui coloca la duracion la cancion-->    
-                                <a href="content-page.html" class="position-absolute overlay-music">
-                                    <i class="fas fa-play tm-overlay-icon"></i>
-                                </a>
-                            </div>    
-                            <div class="p-4 tm-bg-gray tm-catalog-item-description">
-                                <h3 class="tm-text-primary mb-3 tm-catalog-item-title">Daft punks</h3>
-                                <ul class="video-meta">
-                                    <li><strong>Título:</strong> Las Muertas</li>
-                                    <li><strong>Autor:</strong> Marcela del Río</li>
-                                    <li><strong>Género:</strong> Drama psicológico</li>
-                                    <li><strong>Año de publicacion:</strong> 2025</li>
-                                    <li><strong>Descripción:</strong> Una historia íntima y tensa entre mujeres atrapadas en un mundo oscuro.</li>
-                                    <li><strong>Etiquetas:</strong> </li>
-                                </ul>
-                                <div class="content-tags">
-                                    <span class="tag">Drone</span>
-                                    <span class="tag">Naturaleza</span>
-                                    <span class="tag">Corto</span>
-                                </div>
-                                <div class="contenedor-botones-acciones">
-                                    <button class="boton-accion boton-eliminar">
-                                        <i class="fas fa-trash-alt"></i> Eliminar
-                                    </button>
-                                    <a href="agregar.html" class="boton-accion boton-modificar">
-                                        <i class="fas fa-edit"></i> Modificar
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item">
-                            <div class="position-relative tm-thumbnail-container">
-                                <img src="img/dadishus.jpg" alt="Image" class="img-fluid tm-catalog-item-img music-cover">
-                                <span class="music-duration">4:20</span> <!-- Aqui coloca la duracion la cancion-->    
-                                <a href="content-page.html" class="position-absolute overlay-music">
-                                    <i class="fas fa-play tm-overlay-icon"></i>
-                                </a>
-                            </div>    
-                            <div class="p-4 tm-bg-gray tm-catalog-item-description">
-                                <h3 class="tm-text-primary mb-3 tm-catalog-item-title">Daddy Issues</h3>
-                                <ul class="video-meta">
-                                    <li><strong>Título:</strong> Daddy Issues</li>
-                                    <li><strong>Autor:</strong> The Neighbourhood</li>
-                                    <li><strong>Género:</strong> Drama psicológico</li>
-                                    <li><strong>Año de publicacion:</strong> 2015</li>
-                                    <li><strong>Descripción:</strong> problemas psicológicos o emocionales que surgen de una relación deficiente o ausente con el padre o una figura paterna durante la infancia. </li>
-                                    <li><strong>Etiquetas:</strong> </li>
-                                </ul>
-                                <div class="content-tags">
-                                    <span class="tag">Drogas</span>
-                                    <span class="tag">Problemas</span>
-                                    <span class="tag">Daddy?</span>
-                                    <span class="tag">ISSUES</span>
-                                </div>
-                                <div class="contenedor-botones-acciones">
-                                    <button class="boton-accion boton-eliminar">
-                                        <i class="fas fa-trash-alt"></i> Eliminar
-                                    </button>
-                                    <a href="agregar.html" class="boton-accion boton-modificar">
-                                        <i class="fas fa-edit"></i> Modificar
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
+                   <div class="row tm-catalog-item-list" id="catalogo-lista">
                     
                     </div>
 
@@ -301,6 +126,38 @@
 
     <script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('authToken');
+            const username = localStorage.getItem('authUsername');
+
+            if (!token) {
+                // Si no hay token, no está logueado. ¡Fuera de aquí!
+                window.location.href = 'login.html';
+                return; // Detiene la ejecución
+            }
+
+            // Si hay token, muestra el nombre de usuario
+            const usernameDisplay = document.getElementById('username-display');
+            if (usernameDisplay && username) {
+                usernameDisplay.textContent = `Bienvenido, ${username}`;
+            }
+
+            // Funcionalidad del botón de cerrar sesión
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    // Limpia el almacenamiento
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('authUsername');
+                    // Redirige al login
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+    </script>
+
     <script>
         function setVideoSize() {
             const vidWidth = 1920;
@@ -361,6 +218,338 @@
             });
         })
     </script>
+
+    <script>
+    let allItems = []; // Guarda todos los items del servidor
+    const container = document.getElementById('catalogo-lista');
+    
+    // Variables para guardar el estado actual de los filtros
+    let currentCategory = 'all';
+    let currentSearchTerm = '';
+
+    // Se ejecuta cuando la página carga
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarCatalogo();
+        setupCategoryListeners();
+        setupSearchListener();
+        setupClearSearchListener(); // Esta función será modificada
+    });
+
+    // 1. Carga TODOS los datos del servidor
+    async function cargarCatalogo() {
+        try {
+            const response = await fetch('/api/catalogo');
+            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+            
+            allItems = await response.json();
+            applyFilters(); // Muestra los items
+
+        } catch (error) {
+            console.error('Error al cargar el catálogo:', error);
+            container.innerHTML = '<p class="col-12 text-danger">Error al cargar el contenido.</p>';
+        }
+    }
+
+    // 2. Dibuja en pantalla los items
+    function renderItems(itemsToRender) {
+        container.innerHTML = ''; // Limpia el contenedor
+
+        if (itemsToRender.length === 0) {
+            container.innerHTML = `
+                <div class="empty-catalog-message">
+                    <h2>No se encontró contenido con estos filtros.</h2>
+                </div>
+            `;
+            return;
+        }
+
+        itemsToRender.forEach(item => {
+            let itemHtml = '';
+            switch (item.tipo_archivo) {
+                case 'video': itemHtml = crearFichaVideo(item); break;
+                case 'libro': itemHtml = crearFichaLibro(item); break;
+                case 'audiolibro': itemHtml = crearFichaAudioLibro(item); break;
+                case 'musica': itemHtml = crearFichaMusica(item); break;
+            }
+            container.innerHTML += itemHtml;
+        });
+    }
+
+    // 3. FUNCIÓN CENTRAL (Modificada para buscar por año)
+    function applyFilters() {
+        let filteredItems = allItems;
+
+        // Primero, filtra por categoría
+        if (currentCategory !== 'all') {
+            filteredItems = filteredItems.filter(item => item.tipo_archivo === currentCategory);
+        }
+
+        // Segundo, filtra por el término de búsqueda
+        if (currentSearchTerm) { 
+            filteredItems = filteredItems.filter(item => {
+                const searchTerm = currentSearchTerm.toLowerCase();
+                
+                const titulo = (item.titulo || '').toLowerCase();
+                const autor = (item.autor || '').toLowerCase();
+                const etiquetas = (item.etiquetas || []).join(' ').toLowerCase();
+                const anio = (item.ano_publicacion || '').toString(); 
+
+                return titulo.includes(searchTerm) ||
+                       autor.includes(searchTerm) ||
+                       etiquetas.includes(searchTerm) ||
+                       anio.includes(searchTerm);
+            });
+        }
+
+        renderItems(filteredItems);
+    }
+
+    // 4. Listener de categorías
+    function setupCategoryListeners() {
+        const filterList = document.querySelector('.tm-category-list'); 
+
+        filterList.addEventListener('click', (e) => {
+            e.preventDefault();
+            const link = e.target.closest('.tm-category-link');
+            if (!link) return;
+
+            document.querySelector('.tm-category-link.active').classList.remove('active');
+            link.classList.add('active');
+
+            currentCategory = link.dataset.tipo;
+            applyFilters();
+        });
+    }
+
+    // --- 5. ¡FUNCIÓN MODIFICADA! ---
+    // Mueve la lógica del 'input' al 'submit'
+    function setupSearchListener() {
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-input');
+
+        // El formulario ahora maneja la lógica de búsqueda
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Evita que la página se recargue
+            
+            // Actualiza la variable de estado con el valor del input
+            currentSearchTerm = searchInput.value.trim();
+            
+            // Llama a la función central de filtrado
+            applyFilters();
+        });
+    }
+    // --- 6. NUEVA FUNCIÓN: Listener para el botón de limpiar ---
+    function setupClearSearchListener() {
+        const clearBtn = document.getElementById('clear-search-btn');
+
+        console.log('Buscando el botón de limpiar:', clearBtn);
+        const searchInput = document.getElementById('search-input');
+
+        clearBtn.addEventListener('click', () => {
+            // Limpia la variable de estado
+            currentSearchTerm = '';
+            // Limpia el campo de texto del buscador
+            searchInput.value = '';
+            // Vuelve a aplicar los filtros
+            applyFilters();
+        });
+    }
+
+    // --- (AQUÍ VAN TUS 4 FUNCIONES "crearFicha...") ---
+    //
+          function crearFichaVideo(item) {
+            const etiquetasHtml = (item.etiquetas || []).map(tag => `<span class="tag">${tag}</span>`).join('');
+            
+            return `
+            <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item" data-id="${item._id}">
+                <div class="position-relative tm-thumbnail-container">
+                   <img src="${item.thumbnailId ? `/api/thumbnail/${item.thumbnailId}` : getPlaceholderImage(item.tipo_archivo)}" alt="${item.titulo}" class="img-fluid tm-catalog-item-img">
+                    <a href="content-page.html?id=${item._id}" class="position-absolute tm-img-overlay">
+                        <i class="fas fa-play tm-overlay-icon"></i>
+                    </a>
+                </div>
+                <div class="p-4 tm-bg-gray tm-catalog-item-description">
+                    <h3 class="tm-text-primary mb-3 tm-catalog-item-title">${item.titulo}</h3>
+                    <ul class="video-meta">
+                        <li><strong>Título:</strong> ${item.titulo}</li>
+                        <li><strong>Autor:</strong> ${item.autor}</li>
+                        <li><strong>Género:</strong> ${item.genero}</li>
+                        <li><strong>Año:</strong> ${item.ano_publicacion}</li>
+                        <li><strong>Descripción:</strong> ${item.descripcion}</li>
+                        <li><strong>Etiquetas:</strong> </li>
+                    </ul>
+                    <div class="content-tags">${etiquetasHtml}</div>
+                    <div class="contenedor-botones-acciones">
+                        <button class="boton-accion boton-eliminar" data-id="${item._id}">
+                            <i class="fas fa-trash-alt"></i> Eliminar
+                        </button>
+                        <a href="modificar.html?id=${item._id}" class="boton-accion boton-modificar">
+                            <i class="fas fa-edit"></i> Modificar
+                        </a>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function crearFichaLibro(item) {
+            const etiquetasHtml = (item.etiquetas || []).map(tag => `<span class="tag">${tag}</span>`).join('');
+            
+            return `
+            <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item" data-id="${item._id}">
+                <div class="position-relative tm-thumbnail-container">
+                   <img src="${item.thumbnailId ? `/api/thumbnail/${item.thumbnailId}` : getPlaceholderImage(item.tipo_archivo)}" alt="${item.titulo}" class="img-fluid tm-catalog-item-img">
+                   <a href="content-page.html?id=${item._id}" class="position-absolute audiolibro-img-overlay"></a>
+                </div>    
+                <div class="p-4 tm-bg-gray tm-catalog-item-description">
+                    <h3 class="tm-text-primary mb-3 tm-catalog-item-title">${item.titulo}</h3>
+                    <ul class="video-meta">
+                        <li><strong>Título:</strong> ${item.titulo}</li>
+                        <li><strong>Autor:</strong> ${item.autor}</li>
+                        <li><strong>Género:</strong> ${item.genero}</li>
+                        <li><strong>Paginas:</strong> ${item.paginas || 'N/A'}</li> 
+                        <li><strong>Año de publicacion:</strong> ${item.ano_publicacion}</li>
+                        <li><strong>Descripción:</strong> ${item.descripcion}</li>
+                        <li><strong>Etiquetas:</strong> </li>
+                    </ul>
+                    <div class="content-tags">${etiquetasHtml}</div>
+                    <div class="contenedor-botones-acciones">
+                        <button class="boton-accion boton-eliminar" data-id="${item._id}">
+                            <i class="fas fa-trash-alt"></i> Eliminar
+                        </button>
+                        <a href="modificar.html?id=${item._id}" class="boton-accion boton-modificar">
+                            <i class="fas fa-edit"></i> Modificar
+                        </a>
+                    </div>
+                </div>
+            </div>`;
+        }
+        
+        function crearFichaAudioLibro(item) {
+            const etiquetasHtml = (item.etiquetas || []).map(tag => `<span class="tag">${tag}</span>`).join('');
+            
+            return `
+            <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item" data-id="${item._id}">
+                <div class="position-relative tm-thumbnail-container">
+                    <img src="${item.thumbnailId ? `/api/thumbnail/${item.thumbnailId}` : getPlaceholderImage(item.tipo_archivo)}" alt="${item.titulo}" class="img-fluid tm-catalog-item-img">
+                    <a href="content-page.html?id=${item._id}" class="position-absolute audiolibro-img-overlay">
+                        <i class="fas fa-play tm-overlay-icon"></i>
+                    </a>
+                </div>    
+                <div class="p-4 tm-bg-gray tm-catalog-item-description">
+                    <h3 class="tm-text-primary mb-3 tm-catalog-item-title">${item.titulo}</h3>
+                    <ul class="video-meta">
+                        <li><strong>Título:</strong> ${item.titulo}</li>
+                        <li><strong>Autor:</strong> ${item.autor}</li>
+                        <li><strong>Género:</strong> ${item.genero}</li>
+                        <li><strong>Año de publicacion:</strong> ${item.ano_publicacion}</li>
+                        <li><strong>Descripción:</strong> ${item.descripcion}</li>
+                        <li><strong>Etiquetas:</strong> </li>
+                    </ul>
+                    <div class="content-tags">${etiquetasHtml}</div>
+                    <div class="contenedor-botones-acciones">
+                        <button class="boton-accion boton-eliminar" data-id="${item._id}">
+                            <i class="fas fa-trash-alt"></i> Eliminar
+                        </button>
+                        <a href="modificar.html?id=${item._id}" class="boton-accion boton-modificar">
+                            <i class="fas fa-edit"></i> Modificar
+                        </a>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function crearFichaMusica(item) {
+            const etiquetasHtml = (item.etiquetas || []).map(tag => `<span class="tag">${tag}</span>`).join('');
+            
+            return `
+            <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item" data-id="${item._id}">
+                <div class="position-relative tm-thumbnail-container">
+                    <img src="${item.thumbnailId ? `/api/thumbnail/${item.thumbnailId}` : getPlaceholderImage(item.tipo_archivo)}" alt="${item.titulo}" class="img-fluid tm-catalog-item-img">
+                    <a href="content-page.html?id=${item._id}" class="position-absolute overlay-music">
+                        <i class="fas fa-play tm-overlay-icon"></i>
+                    </a>
+                </div>    
+                <div class="p-4 tm-bg-gray tm-catalog-item-description">
+                    <h3 class="tm-text-primary mb-3 tm-catalog-item-title">${item.titulo}</h3>
+                    <ul class="video-meta">
+                        <li><strong>Título:</strong> ${item.titulo}</li>
+                        <li><strong>Autor:</strong> ${item.autor}</li>
+                        <li><strong>Género:</strong> ${item.genero}</li>
+                        <li><strong>Año de publicacion:</strong> ${item.ano_publicacion}</li>
+                        <li><strong>Descripción:</strong> ${item.descripcion}</li>
+                        <li><strong>Etiquetas:</strong> </li>
+                    </ul>
+                    <div class="content-tags">${etiquetasHtml}</div>
+                    <div class="contenedor-botones-acciones">
+                        <button class="boton-accion boton-eliminar" data-id="${item._id}">
+                            <i class="fas fa-trash-alt"></i> Eliminar
+                        </button>
+                        <a href="modificar.html?id=${item._id}" class="boton-accion boton-modificar">
+                            <i class="fas fa-edit"></i> Modificar
+                        </a>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+    //
+    // Función de placeholder, por si acaso
+    function getPlaceholderImage(tipo) {
+        switch (tipo) {
+            case 'video': return 'img/tn-01.jpg';
+            case 'libro': return 'img/itportada.jpg';
+            case 'audiolibro': return 'img/Libro_olvido.jpg';
+            case 'musica': return 'img/daft.jpg';
+            default: return 'img/tn-01.jpg';
+        }
+    }
+</script>
+
+    <script>
+            // Lógica para manejar los clics de eliminación
+            document.addEventListener('DOMContentLoaded', () => {
+                const catalogoLista = document.getElementById('catalogo-lista');
+
+                // 1. Escuchamos clics en toda la lista de contenido
+                catalogoLista.addEventListener('click', async (e) => {
+                    
+                    // 2. Verificamos si el clic fue en un botón de eliminar
+                    const deleteButton = e.target.closest('.boton-eliminar');
+                    
+                    if (deleteButton) {
+                        e.preventDefault(); // Previene cualquier acción por defecto
+                        
+                        const card = deleteButton.closest('.tm-catalog-item');
+                        const itemId = card.dataset.id; // Obtenemos el ID del item
+
+                        // 3. PEDIMOS VERIFICACIÓN AL USUARIO
+                        const wantsToDelete = confirm('¿Estás seguro de que deseas eliminar este contenido? Esta acción no se puede deshacer.');
+
+                        if (wantsToDelete) {
+                            // 4. Si el usuario confirma, enviamos la petición DELETE al servidor
+                            try {
+                                const response = await fetch(`/api/item/${itemId}`, {
+                                    method: 'DELETE'
+                                });
+
+                                if (response.ok) {
+                                    // 5. Eliminamos la tarjeta de la vista con una animación
+                                    card.style.transition = 'opacity 0.5s ease';
+                                    card.style.opacity = '0';
+                                    setTimeout(() => card.remove(), 500);
+                                } else {
+                                    alert('Error: No se pudo eliminar el contenido.');
+                                }
+                            } catch (error) {
+                                console.error('Error de red:', error);
+                                alert('Error de red al intentar eliminar.');
+                            }
+                        }
+                    }
+                });
+            });
+    </script>
+
 </body>
 
 </html>

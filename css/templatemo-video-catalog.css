@@ -30,6 +30,14 @@ a:hover {
 h2, p { color: #666666; }
 
 
+.tm-image-wrapper {
+    position: relative; 
+    display: flex;       
+    max-width: 100%;
+    max-height: 100%;  
+}
+.tm-image-wrapper:hover img
+
 .radio-group-label {
     display: block; 
     color: white;
@@ -60,6 +68,21 @@ h2, p { color: #666666; }
     font-size: 0.95em;
 }
 
+
+.empty-catalog-message {
+    width: 100%; /* Ocupa todo el ancho disponible */
+    min-height: 300px; /* Le da altura para poder centrar verticalmente */
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;   /* Centra verticalmente */
+    text-align: center;
+}
+
+.empty-catalog-message h2 {
+    color: #666666; /* <-- CORREGIDO: Un color oscuro para que sea visible */
+    font-size: 1.8rem;
+    font-weight: 300;
+}
 
 .input-file-hidden {
     display: none;
@@ -184,32 +207,46 @@ h2, p { color: #666666; }
     gap: 10px;
 }
 
+/* --- ESTILOS CORREGIDOS PARA LA BARRA DE BÚSQUEDA --- */
+
 .barra-busqueda {
-    margin-left: auto; 
-    display: flex; 
+    display: flex; /* Mantiene los elementos en línea */
     border: 1px solid #ccc;
-    border-radius: 20px; 
-    overflow: hidden;   
+    border-radius: 50px; /* Bordes súper redondeados */
+    overflow: hidden;    /* Clave para que los botones no se salgan */
+    background-color: white; /* Fondo blanco para el contenedor */
 }
 
 .barra-busqueda input {
+    flex: 1; /* Hace que el campo de texto ocupe todo el espacio disponible */
     border: none;
     outline: none;
-    padding: 8px 12px;
+    padding: 10px 15px;
+    font-size: 1rem;
 }
 
+/* Estilo unificado para AMBOS botones */
 .barra-busqueda button {
-    margin-left: auto; 
     border: none;
-    background-color: #007bff; 
-    color: white;
-    padding: 0 12px;
+    padding: 0 18px; /* Espaciado horizontal */
     cursor: pointer;
+    background-color: #007bff; /* Color azul de búsqueda */
+    color: white;
     transition: background-color 0.3s ease;
 }
 
+/* Estilo específico para el botón de limpiar */
+.barra-busqueda button#clear-search-btn {
+    background-color: #6c757d; /* Color gris */
+}
+
+/* Efecto hover para ambos botones */
 .barra-busqueda button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Azul más oscuro */
+}
+
+.barra-busqueda button#clear-search-btn:hover {
+    background-color: #5a6268; /* Gris más oscuro */
 }
 
 .name-user{
@@ -258,7 +295,7 @@ h2, p { color: #666666; }
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 .audiolibro-duration {
@@ -289,14 +326,16 @@ h2, p { color: #666666; }
 }
 
 .tag {
+  display: inline-block;
   background-color: #28a745;
   color: white;
   padding: 6px 12px;
   font-size: 0.75rem;
-  border-radius: 20px;
+  border-radius: 15px;
   font-weight: 500;
   transition: background-color 0.3s ease;
   cursor: default;
+  font-weight: 500;
 }
 .tag:hover {
   background-color: #218838;
@@ -322,6 +361,117 @@ h2, p { color: #666666; }
   object-fit: contain;
 }
 
+/* Contenedor principal que divide en 2 columnas */
+.book-view-container {
+    display: flex;
+    gap: 30px; /* Espacio entre las columnas */
+    padding-top: 30px;
+    align-items: flex-start; /* Alinea las columnas arriba */
+}
+
+/* Columna de Metadatos (la tarjeta de información) */
+.book-meta-column {
+    flex: 0 0 320px; /* Ancho fijo de 320px */
+    background-color: #f8f9fa; /* Fondo gris claro */
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.book-cover-image {
+    margin-bottom: 20px; /* Espacio debajo de la carátula */
+    text-align: center; /* Centra la imagen si es más pequeña */
+}
+
+.book-cover-image img {
+    max-width: 100%; /* La imagen no se desbordará de su contenedor */
+    height: auto; /* Mantiene la proporción */
+    border-radius: 5px; /* Bordes ligeramente redondeados */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra suave para que resalte */
+}
+
+.book-meta-column h2 {
+    color: #3399CC;
+    margin-top: 15px;
+}
+
+.book-meta-column p {
+    color: #666;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.book-meta-column hr {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 15px 0;
+}
+
+.book-description {
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+/* Columna del Visor de PDF */
+.book-pdf-column {
+    flex: 1; /* Ocupa el resto del espacio */
+    height: 80vh; /* Altura del 80% de la ventana */
+}
+
+/* El visor de PDF (iframe) */
+.pdf-viewer {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #dee2e6; /* Borde sutil */
+    border-radius: 8px;
+}
+.spotify-style-player {
+    width: 80%;
+    border-radius: 50px;
+    color-scheme: dark;
+ 
+    filter: invert(1) brightness(0.9);
+}
+
+/* --- ESTILOS PARA LA COLUMNA DEL REPRODUCTOR DE AUDIO --- */
+.audio-player-column {
+    flex: 1; /* Ocupa el resto del espacio */
+    display: flex;
+    align-items: center; /* Centra el reproductor verticalmente */
+    justify-content: center; /* Centra el reproductor horizontalmente */
+    padding: 20px;
+    min-height: 250px; /* Asegura que la columna tenga algo de altura */
+}
+
+.audio-player-column .spotify-style-player {
+    width: 100%; /* El reproductor ocupa el 100% de esta columna */
+}
+
+.barra-busqueda button#clear-search-btn {
+    background-color: #6c757d; /* Un color gris neutro */
+    color: white;
+    padding: 0 14px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.barra-busqueda button#clear-search-btn:hover {
+    background-color: #5a6268;
+}
+
+
+/* Media Query para pantallas pequeñas */
+@media (max-width: 991px) {
+    .book-view-container {
+        flex-direction: column; /* Apila las columnas en móviles */
+    }
+    .book-meta-column {
+        flex: 0 0 auto; /* Permite que la altura sea automática */
+        width: 100%;
+    }
+}
+
 .music-cover {
   display: block;
   margin-left: auto;
@@ -344,8 +494,7 @@ h2, p { color: #666666; }
 .login-page {
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;           
+    align-items: center;          
     margin: 0;
     padding-top: 30px !important;
     margin-top: 0 !important;
@@ -571,9 +720,12 @@ h2, p { color: #666666; }
 }
 
 .tm-thumbnail-container { 
+    height: 220px;
     overflow: hidden; 
     position: relative;
-    display: inline-block;  
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .tm-thumbnail-container img { 
     transition: all 0.3s ease; 
@@ -590,7 +742,6 @@ h2, p { color: #666666; }
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0,0,0,0.4);
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -629,10 +780,10 @@ h2, p { color: #666666; }
 }
 
 .tm-catalog-item-img {
-  display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: contain;
+  object-position: center;
 }
 
 .tm-img-overlay:hover .tm-overlay-icon, .overlay-music:hover .tm-overlay-icon, .audiolibro-img-overlay:hover { opacity: 0; }
@@ -803,8 +954,7 @@ video {
 }
 
 #contact-select:not([multiple]) {
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  
   background-position: right 15px center;
   background-repeat: no-repeat;
   background-image: url(../img/select-arrow.png);

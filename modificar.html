@@ -41,27 +41,29 @@
 		<div class="container-fluid" >
 			<div class="login-page">   
             <div class="login-container">
-            <form class="agregar-form">
+            <form class="agregar-form" id="uploadForm" enctype="multipart/form-data">
+                <input type="hidden" name="fileId">
+                <input type="hidden" name="thumbnailId">
                 <div class="form-group">
-                    <input type="text" placeholder="Titulo" class="form-input" required>
+                    <input type="text" placeholder="Titulo" class="form-input" name="titulo" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" placeholder="Autor" class="form-input" required>
+                    <input type="text" placeholder="Autor" class="form-input" name="autor" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" placeholder="Genero" class="form-input" required>
+                    <input type="text" placeholder="Genero" class="form-input" name="genero" required>
                 </div>
                 <div class="form-group">
-                    <input type="number" placeholder="Año de publicacion" class="form-input" required>
+                    <input type="number" placeholder="Año de publicacion" class="form-input" name="ano_publicacion" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" placeholder="Descripcion" class="form-input" required>
+                    <input type="text" placeholder="Descripcion" class="form-input" name="descripcion" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" placeholder="Etiquetas" class="form-input" required>
+                    <input type="text" placeholder="Etiquetas" class="form-input" name="etiquetas" required>
                 </div>
                 <div class="form-group">
-                    <input type="number" placeholder="Paginas" class="form-input">
+                    <input type="number" placeholder="Paginas" class="form-input" name="paginas">
                 </div>
                     
                 <label class="radio-group-label">Tipo de Archivo:</label>
@@ -85,13 +87,20 @@
                     </div>
                 </div>
 
-                <input type="file" id="subir-archivo-input" name="mi_archivo" class="input-file-hidden" required>
+                <input type="file" id="subir-archivo-input" name="mi_archivo" class="input-file-hidden">
                 <label for="subir-archivo-input" id="label-subir-archivo" class="btn-subir-archivo">
-                    Seleccionar Archivo
+                    Seleccionar Archivo (Opcional)
                 </label>
 
+                <input type="file" id="subir-miniatura-input" name="thumbnail" class="input-file-hidden" accept="image/*">
+                <label for="subir-miniatura-input" id="label-subir-miniatura" class="btn-subir-archivo">
+                    Seleccionar Miniatura (Opcional)
+                </label>
+
+                <div id="status-message" style="color: white; text-align: center; margin-top: 15px;"></div>
+
                 <div class="d-flex justify-content-center">
-                <button type="submit" class="login-button" style="color: black;">Modificar</button>
+                    <button type="submit" class="login-button" style="color: black;">Registrar</button>
                 </div>
             </form>
             
@@ -103,18 +112,113 @@
 	<script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script>
-    	$(document).ready(function() {
-    		$('.tm-likes-box').click(function(e) {
-    			e.preventDefault();
-    			$(this).toggleClass('tm-liked');
+    document.addEventListener('DOMContentLoaded', async () => {
+        // 1. OBTENER EL ID DEL ITEM DESDE LA URL
+        const params = new URLSearchParams(window.location.search);
+        const itemId = params.get('id');
+        const form = document.getElementById('uploadForm');
+        const statusMessage = document.getElementById('status-message');
 
-    			if($(this).hasClass('tm-liked')) {
-    				$('#tm-likes-count').html('486 likes');
-    			} else {
-    				$('#tm-likes-count').html('485 likes');
-    			}
-    		});
-    	});
-    </script>
+        function setupFileInputLabel(inputId, labelId, defaultText) {
+            const input = document.getElementById(inputId);
+            const label = document.getElementById(labelId);
+            
+            if (input) {
+                // Asigna el texto por defecto al cargar
+                label.textContent = defaultText;
+
+                // Escucha cambios en el input
+                input.addEventListener('change', function() {
+                    if (this.files && this.files.length > 0) {
+                        label.textContent = this.files[0].name; // Muestra el nombre del archivo
+                    } else {
+                        label.textContent = defaultText; // Vuelve al texto por defecto
+                    }
+                });
+            }
+        }
+
+        // Configurar ambos inputs con su texto por defecto
+        setupFileInputLabel('subir-archivo-input', 'label-subir-archivo', 'Cambiar archivo (opcional)');
+        setupFileInputLabel('subir-miniatura-input', 'label-subir-miniatura', 'Cambiar miniatura (opcional)');
+        
+
+
+        if (!itemId) {
+            statusMessage.textContent = 'Error: No se especificó un ID para modificar.';
+            return;
+        }
+
+        // 2. PEDIR LOS DATOS ACTUALES AL SERVIDOR
+        try {
+            const response = await fetch(`/api/item/${itemId}`);
+            if (!response.ok) {
+                throw new Error('El item no fue encontrado o hubo un error.');
+            }
+            const itemData = await response.json();
+            
+            // 3. RELLENAR EL FORMULARIO CON ESOS DATOS
+            populateForm(itemData);
+
+        } catch (error) {
+            statusMessage.style.color = '#F44336';
+            statusMessage.textContent = error.message;
+        }
+
+        // 4. CONFIGURAR EL ENVÍO DEL FORMULARIO (PARA ACTUALIZAR)
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            statusMessage.style.color = 'white';
+            statusMessage.textContent = 'Actualizando...';
+
+            const formData = new FormData(form);
+
+            try {
+                // Se envía a una ruta PUT para actualizar, no a /upload
+                const updateResponse = await fetch(`/api/item/${itemId}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                const result = await updateResponse.json();
+
+                if (updateResponse.ok) {
+                    statusMessage.style.color = '#4CAF50';
+                    statusMessage.textContent = '¡Éxito! ' + result.message;
+                    // Opcional: Redirigir al catálogo después de 2 segundos
+                   // setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                } else {
+                    statusMessage.style.color = '#F44336';
+                    statusMessage.textContent = 'Error: ' + result.error;
+                }
+            } catch (error) {
+                statusMessage.style.color = '#F44336';
+                statusMessage.textContent = 'Error de red al actualizar.';
+            }
+        });
+    });
+
+    // Función auxiliar para rellenar los campos del formulario
+    function populateForm(data) {
+        document.querySelector('[name="titulo"]').value = data.titulo || '';
+        document.querySelector('[name="autor"]').value = data.autor || '';
+        document.querySelector('[name="genero"]').value = data.genero || '';
+        document.querySelector('[name="ano_publicacion"]').value = data.ano_publicacion || '';
+        document.querySelector('[name="descripcion"]').value = data.descripcion || '';
+        document.querySelector('[name="paginas"]').value = data.paginas || '';
+        document.querySelector('[name="fileId"]').value = data.fileId || '';
+        document.querySelector('[name="thumbnailId"]').value = data.thumbnailId || '';
+
+        
+        // Las etiquetas son un array, las unimos con comas para el input
+        document.querySelector('[name="etiquetas"]').value = (data.etiquetas || []).join(', ');
+
+        // Seleccionar el tipo de archivo correcto
+        if (data.tipo_archivo) {
+            document.querySelector(`input[name="tipo_archivo"][value="${data.tipo_archivo}"]`).checked = true;
+        }
+
+    }
+</script>
 </body>
 </html>
